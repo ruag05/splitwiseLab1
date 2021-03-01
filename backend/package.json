@@ -2,7 +2,7 @@
   "name": "splitwise",
   "version": "1.0.0",
   "description": "CMPE 273 Lab 1 Project",
-  "main": "index.js",
+  "main": "server.js",
   "author": "Ruchir Agarwal",
   "license": "MIT",
   "scripts": {
