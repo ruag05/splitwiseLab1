@@ -26,12 +26,13 @@ if (config.use_env_variable) {
 
 //will read content of __dirname directory
 //will return array of all files names/objects in the directory
-fs.readdirSync(__dirname).filter((file) => {
-    return file.indexOf('.') !== 0 && file !== basename && file.slice(-2) === '.js';
-}).forEach(() => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    return db[model.name] = model;
-});
+fs.readdirSync(__dirname)
+    .filter((file) => {
+        return file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js';
+    }).forEach((file) => {
+        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+        return db[model.name] = model;
+    });
 
 Object.keys(db).forEach((modelName) => {
     if (db[modelName].associate) {

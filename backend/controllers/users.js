@@ -18,28 +18,144 @@ const registerSchema = {
 const registerCheck = v.compile(registerSchema);
 
 exports.register = async (req, res) => {
-    const errors = registerCheck(req.body);
-    console.log("registerCheck returned" + errors);
-    if (errors.length) {
-      res.status(400).json({ msg: 'Validation errors', errors });
-    } else {
-      try {
-        const result = await db.User.findOne({
-          where: { email: req.body.email },
-        });
-        console.log(result);
-        if (result) {
-          return res.status(400).json({ msg: 'Email already exists.' });
-        }
-        req.body.password = bcrypt.hashSync(req.body.password, salt);
-        req.body.emailToken = uuid();
-        await db.User.create(req.body);
-  
-        res.status(201).json({
-          msg: 'User created successfully.',
-        });
-      } catch (error) {
-        res.status(400).json({ msg: error.message });
+  const errors = registerCheck(req.body);
+  if (errors.length) {
+    res.status(400).json({ msg: 'Validation errors', errors });
+  } else {
+    try {
+      const result = await db.User.findOne({
+        where: { email: req.body.email },
+      });
+      if (result) {
+        return res.status(400).json({ msg: 'Email already exists.' });
       }
+      req.body.password = bcrypt.hashSync(req.body.password, salt);
+      req.body.emailToken = uuid();
+      await db.User.create(req.body);
+
+      res.status(201).json({
+        msg: 'User created successfully.',
+      });
+    } catch (error) {
+      res.status(400).json({ msg: error.message });
     }
-  };
+  }
+};
+
+exports.login = async (req, res) => {
+  const result = await db.User.findOne({ where: { email: req.body.email } });
+
+  if (!result) {
+    return res.status(401).json({ msg: 'User not found' });
+  }
+  console.log(req.body.password);
+  console.log(result.password);
+  if (bcrypt.compareSync(req.body.password, result.password)) {
+    
+    const token = jwt.sign({ userId: result.id, email: result.email }, `${process.env.JWT_SECRET}`, {
+      expiresIn: '2h',
+    });
+    console.log(token);
+    res.cookie('authtkn', token, {
+      maxAge: 1000 * 60 * 60 * 12,
+      httpOnly: true,
+    });
+    
+    res.status(200).json({
+      msg: 'Logged in successfully',
+      userId: result.id,
+    });
+  } else {
+    return res.status(403).json({ msg: 'Invalid credentials' });
+  }
+};
+
+exports.autoLogin = (req, res) => {
+  if (req.user) {
+    res.json({ loggedIn: true, role: req.user.role });
+  } else {
+    res.json({ loggedIn: false, role: '' });
+  }
+};
+
+exports.getById = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.user.userId);
+    return res.json({ ...user, password: '' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: error.message });
+  }
+};
+
+exports.updateProfilePic = async (req, res) => {
+  try {
+    req.body.photo = req.files?.photo[0]?.filename;
+    const user = await db.User.findOne({ where: { id: req.user.userId } });
+    await user.update({ photo: req.body.photo });
+    return res.json({ msg: 'Updated Profile picture', photo: req.body.photo });
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ msg: error.message });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  console.log(req.body);
+  try {
+    const user = await db.User.findByPk(req.user.userId);
+    await user.update(
+      {
+        name: req.body.name,
+        phone: req.body.phone,
+        currency: req.body.currency,
+        timezone: req.body.timezone,
+        language: req.body.language,
+      },
+      { where: { id: req.user.userId } }
+    );
+
+    res.json({ user: { ...user.dataValues, password: '' } });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: error.message });
+  }
+};
+
+exports.getPic = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.user.userId);
+    return res.json({ photo: user.photo });
+    // return res.sensdFile(process.cwd() + '/uploads' + user.photo);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: error.message });
+  }
+};
+
+exports.getAllEmails = async (req, res) => {
+  try {
+    const users = await db.User.findAll();
+    const emails = [];
+    users.forEach((element) => {
+      if (element.id != req.user.userId) emails.push(element.email);
+    });
+    return res.json({ emails });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: error.message });
+  }
+};
+
+exports.getAllGroups = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.user.userId);
+    // users.forEach((element) => {
+    //   if (element.id != req.user.userId) emails.push(element.email);
+    // });
+    return res.json({ groups: user.groups });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: error.message });
+  }
+};
