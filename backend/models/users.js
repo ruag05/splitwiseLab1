@@ -1,54 +1,61 @@
 'use strict';
-
-const { Model, DATE } = require('sequelize');
-
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class User extends Model { }
-
-    User.init({
-        name: {
-            type: DataTypes.STRING(100),
-            allowNull: false,
+  class User extends Model {
+    static associate(models) {
+    }
+  }
+  User.init(
+    {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      phone: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      photo: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      currency: {
+        type: DataTypes.STRING,
+        defaultValue: 'USD',
+      },
+      timezone: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: '',
+      },
+      language: {
+        type: DataTypes.STRING,
+        defaultValue: 'EN',
+      },
+      groups: {
+        type: DataTypes.TEXT,
+        defaultValue: JSON.stringify([]),
+        get: function () {
+          return JSON.parse(this.getDataValue('groups'));
         },
-        email: {
-            type: DataTypes.STRING(100),
-            allowNull: false,
+        set: function (val) {
+          return this.setDataValue('groups', JSON.stringify(val));
         },
-        password: {
-            type: DataTypes.STRING(100),
-            allowNull: false,
-        },
-        phone: {
-            type: DataTypes.STRING,
-            //allowNUll is by default true
-        },
-        photo: {
-            type: DataTypes.STRING,
-        },
-        currency: {
-            type: DataTypes.STRING,
-            defaultValue: 'USD',
-        },
-        language: {
-            type: DataTypes.STRING,
-            defaultValue: 'EN',
-        },
-        timezone: {
-            type: DataTypes.STRING,
-        },
-        groups: {
-            type: DataTypes.TEXT,
-            defaultValue: JSON.stringify([]),
-            get: () => {
-                return JSON.parse(this.getDataValue(groups));
-            },
-            set: (val) => {
-                return this.setDataValue('groups', JSON.stringify(val));
-            }
-        }
-    }, {
-        sequelize,
-        modelName: 'User',
-    });
-    return User;
+      },
+    },
+    {
+      sequelize,
+      modelName: 'User',
+    }
+  );
+  return User;
 };

@@ -6,7 +6,7 @@ exports.checkAuth = (req, res, next) => {
     return res.status(400).json({ msg: 'No auth token found. Please login again.' });
   }
   try {
-    let decoded = jwt.verify(authtkn, process.env.JWT_SECRET);
+    let decoded = jwt.verify(authtkn, `${process.env.JWT_SECRET}`);
     req.user = decoded;
     // console.log("Data: " , decoded);
   } catch (error) {

@@ -17,6 +17,32 @@ const registerSchema = {
 
 const registerCheck = v.compile(registerSchema);
 
+exports.login = async (req, res) => {
+  const result = await db.User.findOne({ where: { email: req.body.email } });
+
+  if (!result) {
+    return res.status(401).json({ msg: 'User not found' });
+  }
+
+  if (bcrypt.compareSync(req.body.password, result.password)) {
+    const token = jwt.sign({ userId: result.id, email: result.email }, `${process.env.JWT_SECRET}`, {
+      expiresIn: '2h',
+    });
+
+    res.cookie('authtkn', token, {
+      maxAge: 1000 * 60 * 60 * 12,
+      httpOnly: true,
+    });
+    
+    res.status(200).json({
+      msg: 'Logged in successfully',
+      userId: result.id,
+    });
+  } else {
+    return res.status(403).json({ msg: 'Invalid credentials' });
+  }
+};
+
 exports.register = async (req, res) => {
   const errors = registerCheck(req.body);
   if (errors.length) {
@@ -26,6 +52,7 @@ exports.register = async (req, res) => {
       const result = await db.User.findOne({
         where: { email: req.body.email },
       });
+      console.log(result);
       if (result) {
         return res.status(400).json({ msg: 'Email already exists.' });
       }
@@ -42,49 +69,11 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
-  const result = await db.User.findOne({ where: { email: req.body.email } });
-
-  if (!result) {
-    return res.status(401).json({ msg: 'User not found' });
-  }
-  console.log(req.body.password);
-  console.log(result.password);
-  if (bcrypt.compareSync(req.body.password, result.password)) {
-    
-    const token = jwt.sign({ userId: result.id, email: result.email }, `${process.env.JWT_SECRET}`, {
-      expiresIn: '2h',
-    });
-    console.log(token);
-    res.cookie('authtkn', token, {
-      maxAge: 1000 * 60 * 60 * 12,
-      httpOnly: true,
-    });
-    
-    res.status(200).json({
-      msg: 'Logged in successfully',
-      userId: result.id,
-    });
-  } else {
-    return res.status(403).json({ msg: 'Invalid credentials' });
-  }
-};
-
 exports.autoLogin = (req, res) => {
   if (req.user) {
     res.json({ loggedIn: true, role: req.user.role });
   } else {
     res.json({ loggedIn: false, role: '' });
-  }
-};
-
-exports.getById = async (req, res) => {
-  try {
-    const user = await db.User.findByPk(req.user.userId);
-    return res.json({ ...user, password: '' });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ msg: error.message });
   }
 };
 
@@ -116,6 +105,16 @@ exports.updateProfile = async (req, res) => {
     );
 
     res.json({ user: { ...user.dataValues, password: '' } });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: error.message });
+  }
+};
+
+exports.getById = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.user.userId);
+    return res.json({ ...user, password: '' });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ msg: error.message });

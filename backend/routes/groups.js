@@ -1,23 +1,19 @@
 const express = require('express');
 const {
-  register,
-  login,
-  autoLogin,
-  updateProfilePic,
-  updateProfile,
+  createGroup,
+  inviteMember,
+  acceptInvite,
+  leaveGroup,
+  allUserIvites,
   getById,
-  getPic,
-  getAllEmails,
-  getAllGroups,
-} = require('../controllers/users');
+} = require('../controllers/groups');
 const { checkAuth } = require('../utils/auth');
 const { uploadMiddleware } = require('../utils/upload');
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.get('/autoLogin', checkAuth, autoLogin);
-router.post('/updateProfilePic', checkAuth,
+router.post(
+  '/create',
+  checkAuth,
   function (req, res, next) {
     try {
       uploadMiddleware([{ name: 'photo' }])(req, res, (err) => {
@@ -34,17 +30,12 @@ router.post('/updateProfilePic', checkAuth,
       });
     }
   },
-  updateProfilePic
+  createGroup
 );
-router.post('/update', checkAuth, updateProfile);
-router.post('/logout', (req, res) => {
-  res.clearCookie('authtkn');
-  res.json({ message: 'Logged Out' });
-});
-
-router.get('/', checkAuth, getById);
-router.get('/getPic', checkAuth, getPic);
-router.get('/getGroups', checkAuth, getAllGroups);
-router.get('/getEmails', checkAuth, getAllEmails);
+router.post('/invite', checkAuth, inviteMember);
+router.post('/leave', checkAuth, leaveGroup);
+router.post('/acceptInvite', checkAuth, acceptInvite);
+router.get('/getInvites', checkAuth, allUserIvites);
+router.get('/:id', checkAuth, getById);
 
 module.exports = router;
