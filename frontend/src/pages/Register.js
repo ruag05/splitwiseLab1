@@ -3,39 +3,86 @@ import { useHistory } from "react-router-dom";
 import { useAlert } from "react-alert";
 import axios from "axios";
 import { authContext } from "../context/AuthContext";
-const initState = {
-  email: "",
-  password: "",
-};
+import { useSelector, useDispatch } from "react-redux";
+import validate from '../utils/validateInputs.js';
 
 export default function Register() {
+
   const auth = React.useContext(authContext).state;
   let history = useHistory();
-  const [user, setUser] = useState(initState);
   const alert = useAlert();
-  let { dispatch } = useContext(authContext);
+
+  const initState = {
+    name: '',
+    email: '',
+    password: '',
+    validationErr: {},
+  }
+  const [user, setUser] = useState(initState);
+
+  // #region Redux code
+  const name1 = useSelector(state => state.name)
+  const email1 = useSelector(state => state.email)
+  const password1 = useSelector(state => state.password)
+  const cpassword1 = useSelector(state => state.cpassword)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (initState) {
+      console.log("Register.js -> Inside useEffect");
+      if (name1 && email1 && password1 && cpassword1) {
+        const validationErrors = validate(user);
+        const noErrors = Object.keys(validationErrors).length === 0;
+        setUser({
+          ...user,
+          validationErr: validationErrors,
+        }
+        );
+        if (noErrors) {
+          console.log("Inputs Validated");
+          axios.post('http://localhost:5000/users/register', {
+            name: name1, email: email1, password: password1, cpassword: cpassword1
+          })
+            .then(() => { 
+              console.log("Register.js -> Inside Axios->Post->then success")
+              alert.success("Registeration successful");
+              history.push("/Login");
+            }, (error) => {
+              console.log("Inside Axios->Post->then fail")
+              console.log(error.response.msg);
+              if (error.response.status === 400)
+                alert.error("User already exists");
+            })
+        }
+        else
+          alert.error("Inputs Validation failed");
+      }
+    }
+  }, [name1, email1, password1, cpassword1]);
+  //#endregion
 
   const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    console.log(`Changed property: ${e.target.name}`);
+    setUser(user => ({ ...user, [e.target.name]: e.target.value }));
   };
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+  const handleRegister = () => {
     try {
-      console.log(user);
-      const { data } = await axios.post("/users/register", user);
-      alert.success("Registeration successful");
-      history.push("/login");
+      // const { data } = await axios.post("/users/register", user);
+      dispatch({
+        type: "Register", payload: {
+          name: user.name,
+          email: user.email,
+          password: user.password,
+          cpassword: user.cpassword
+        }
+      })
+      //changing it to Login is not working
+      //history.push("/Register");
     } catch (error) {
       if (error.response) alert.error(error.response.data.msg);
     }
   };
-
-  useEffect(() => {
-    if (auth.loggedIn) {
-      history.push("/");
-    }
-  });
 
   return (
     <div className="container-fluid">
@@ -46,7 +93,8 @@ export default function Register() {
               <div className="row">
                 <div className="col-md-9 col-md-8 mx-auto">
                   <h3 className="login-heading mb-4">Create account</h3>
-                  <form onSubmit={handleRegister}>
+                  <form >
+                    <div className="errorMsg">{user.validationErr.name}</div>
                     <div className="form-label-group">
                       <input
                         type="text"
@@ -54,12 +102,13 @@ export default function Register() {
                         name="name"
                         className="form-control"
                         onChange={handleChange}
-                        placeholder="Email address"
+                        placeholder="Enter name"
                         required
                         autofocus
                       />
                       <label for="name">Name</label>
                     </div>
+                    <div className="errorMsg">{user.validationErr.email}</div>
                     <div className="form-label-group">
                       <input
                         type="email"
@@ -67,13 +116,13 @@ export default function Register() {
                         name="email"
                         className="form-control"
                         onChange={handleChange}
-                        placeholder="Email address"
+                        placeholder="Enter email-address"
                         required
                         autofocus
                       />
                       <label for="inputEmail">Email address</label>
                     </div>
-
+                    <div className="errorMsg">{user.validationErr.password}</div>
                     <div className="form-label-group">
                       <input
                         type="password"
@@ -81,11 +130,12 @@ export default function Register() {
                         name="password"
                         className="form-control"
                         onChange={handleChange}
-                        placeholder="Password"
+                        placeholder="Enter Password"
                         required
                       />
                       <label for="inputPassword">Password</label>
                     </div>
+                    <div className="errorMsg">{user.validationErr.cpassword}</div>
                     <div className="form-label-group">
                       <input
                         type="password"
@@ -93,14 +143,14 @@ export default function Register() {
                         name="cpassword"
                         className="form-control"
                         onChange={handleChange}
-                        placeholder="Password"
+                        placeholder="Confirm Password"
                         required
                       />
                       <label for="inputcPassword">Confirm Password</label>
                     </div>
                     <button
                       className="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
-                      type="submit">
+                      type="button" onClick={handleRegister}>
                       Register
                     </button>
                   </form>

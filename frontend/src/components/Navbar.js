@@ -1,16 +1,13 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { authContext } from "../context/AuthContext";
+// import { authContext } from "../context/AuthContext";
+import { useSelector } from "react-redux"
 import logout from "../utils/logout";
 
 export default function Navbar() {
-  const auth = useContext(authContext).state;
-  var icon = (
-    <span class="logo">
-      <a href="/">
-        <img src="/images/icon.png" height="33" width="120" alt="text here" /></a>
-    </span>
-  );
+  // const auth = useContext(authContext).state;
+  const isLoggedIn = useSelector(state => state.isLoggedIn)
+  const isSubmitted = useSelector(state => state.isSubmitted)
   return (
     <nav className="navbar navbar-expand-sm navbar-light bg-light">    
       <Link className="navbar-brand" to="/">
@@ -29,7 +26,7 @@ export default function Navbar() {
       </button>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav ml-auto">
-          {auth.loggedIn ? (
+          {(isLoggedIn && isSubmitted ) ? (
             <>
               <li className="nav-item active">
                 <Link className="nav-link" to="/">

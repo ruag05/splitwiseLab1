@@ -33,10 +33,10 @@ exports.login = async (req, res) => {
       maxAge: 1000 * 60 * 60 * 12,
       httpOnly: true,
     });
-    
+
     res.status(200).json({
       msg: 'Logged in successfully',
-      userId: result.id,
+      userId: result.id
     });
   } else {
     return res.status(403).json({ msg: 'Invalid credentials' });
@@ -44,22 +44,28 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
+  console.log("______Registeration started______");
   const errors = registerCheck(req.body);
   if (errors.length) {
+    console.log("______Registration->validation error______");
     res.status(400).json({ msg: 'Validation errors', errors });
   } else {
+    console.log("______Registration->validation successful______");
     try {
       const result = await db.User.findOne({
         where: { email: req.body.email },
-      });
-      console.log(result);
+      }).then(() => { });
+
+      console.log("______Inside db.User.findOne then______");
       if (result) {
+        console.log("______Email already exists______");
         return res.status(400).json({ msg: 'Email already exists.' });
       }
+      console.log("______User Creating______");
       req.body.password = bcrypt.hashSync(req.body.password, salt);
       req.body.emailToken = uuid();
-      await db.User.create(req.body);
-
+      const checkCreateUser = db.User.create(req.body);
+      console.log("______User Created Successfully______");
       res.status(201).json({
         msg: 'User created successfully.',
       });
