@@ -4,6 +4,8 @@ import ProtectedRoutes from "./components/ProtectedRoutes";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import CreateInvite from "./components/CreateInvite";
+import Groups from "./pages/CreateGroups";
 
 function App() {
   return (
@@ -19,6 +21,12 @@ function App() {
           </Route>
           <ProtectedRoutes path="/" exact>
             <Home />
+          </ProtectedRoutes>
+          <ProtectedRoutes path="/groups/create" exact>
+          <Groups />
+        </ProtectedRoutes>
+        <ProtectedRoutes path="/groups/invite" exact>
+            <CreateInvite />
           </ProtectedRoutes>         
           <Route>
             <h2 className="text-center mt-5">Page Not found</h2>
