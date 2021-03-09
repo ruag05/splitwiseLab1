@@ -1,17 +1,14 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-// import { authContext } from "../context/AuthContext";
-import { useSelector } from "react-redux"
+import { authContext } from "../context/AuthContext";
 import logout from "../utils/logout";
 
 export default function Navbar() {
-  // const auth = useContext(authContext).state;
-  const isLoggedIn = useSelector(state => state.isLoggedIn)
-  const isSubmitted = useSelector(state => state.isSubmitted)
+  const auth = useContext(authContext).state;
   return (
-    <nav className="navbar navbar-expand-sm navbar-light bg-light">    
+    <nav className="navbar navbar-expand-sm navbar-light bg-light">
       <Link className="navbar-brand" to="/">
-        S P L I T W I S E
+        Splitwise
       </Link>
       <button
         className="navbar-toggler"
@@ -26,7 +23,7 @@ export default function Navbar() {
       </button>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
         <ul className="navbar-nav ml-auto">
-          {(isLoggedIn && isSubmitted ) ? (
+          {auth.loggedIn ? (
             <>
               <li className="nav-item active">
                 <Link className="nav-link" to="/">
