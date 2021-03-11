@@ -40,7 +40,7 @@ export default function Register() {
   return (
     <div className="container-fluid">
       <div className="row no-gutter">
-        <div className="col-md-8 col-lg-6">
+        <div className="col-md-4 col-lg-4">
           <div className="login d-flex align-items-center py-5">
             <div className="container">
               <div className="row">
@@ -110,7 +110,7 @@ export default function Register() {
             </div>
           </div>
         </div>
-        <div className="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
+        <div className="d-none d-md-flex col-lg-4 col-lg-8 bg-image"></div>
       </div>
     </div>
   );

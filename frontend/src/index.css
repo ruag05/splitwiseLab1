@@ -23,8 +23,10 @@ code {
 
 .bg-image {
   background-image: url('./images/splitwise.PNG');
-  background-size: cover;
-  background-position: center;
+  background-size: center;
+  background-repeat: no-repeat;
+  
+  background-position-y: 35%;
 }
 
 .login-heading {
