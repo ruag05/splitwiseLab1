@@ -27,7 +27,7 @@ export default function Login() {
       dispatch({ type: "LOG_IN" });
       alert.success("Log In successful.");
       history.push("/dashboard");
-      history.push("/admin");
+      //history.push("/admin");
 
       // if (data.role === "user") {
       //   history.push("/dashboard");

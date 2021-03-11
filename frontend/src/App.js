@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CreateInvite from "./components/CreateInvite";
 import Groups from "./pages/CreateGroups";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -19,6 +20,9 @@ function App() {
           <Route path="/register" exact>
             <Register />
           </Route>
+          <ProtectedRoutes path="/profile" exact>
+          <Profile />
+        </ProtectedRoutes>
           <ProtectedRoutes path="/" exact>
             <Home />
           </ProtectedRoutes>
