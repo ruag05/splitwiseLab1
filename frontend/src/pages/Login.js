@@ -25,7 +25,7 @@ export default function Login() {
       const { data } = await axios.post("/users/login", user);
       dispatch({ type: "SET_ROLE", payload: data.role });
       dispatch({ type: "LOG_IN" });
-      alert.success("Log In successful.");
+      alert.success("Log In successful");
       history.push("/dashboard");
       //history.push("/admin");
 

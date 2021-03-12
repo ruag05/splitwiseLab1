@@ -3,9 +3,11 @@ import { useHistory } from "react-router-dom";
 import { useAlert } from "react-alert";
 import axios from "axios";
 import { authContext } from "../context/AuthContext";
+
 const initState = {
+  name: "",
   email: "",
-  password: "",
+  password: ""
 };
 
 export default function Register() {
@@ -22,11 +24,23 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      console.log(user);
-      const { data } = await axios.post("/users/register", user);
-      alert.success("Registeration successful");
-      history.push("/login");
-    } catch (error) {
+      if (user.password === user.cpassword) {
+        console.log("Inputs validated successfully");
+        const { data } = await axios.post("/users/register", user)
+          .then(() => {
+            alert.success("Account Created Successfully");
+            history.push("/Login");
+          }, (error) => {
+            console.log("Input validation failed");
+            if (error.response.status === 400)
+              return alert.error("Email Already In-Use");
+            return alert.error(error.response.data.msg);
+          });
+      } else {
+        alert.error("Passwords Do Not Match");
+      }
+    }
+    catch (error) {
       if (error.response) alert.error(error.response.data.msg);
     }
   };
@@ -45,7 +59,7 @@ export default function Register() {
             <div className="container">
               <div className="row">
                 <div className="col-md-9 col-lg-8 mx-auto">
-                  <h3 className="login-heading mb-4">Create account</h3>
+                  <h3 className="login-heading mb-4 px-3">Create account</h3>
                   <form onSubmit={handleRegister}>
                     <div className="form-label-group">
                       <input
@@ -54,7 +68,9 @@ export default function Register() {
                         name="name"
                         className="form-control"
                         onChange={handleChange}
-                        placeholder="Email address"
+                        placeholder="Name"
+                        pattern="[a-zA-Z]{4,16}"
+                        title="Must be 4 to 16 characters in length"
                         required
                         autofocus
                       />
@@ -73,7 +89,6 @@ export default function Register() {
                       />
                       <label for="inputEmail">Email address</label>
                     </div>
-
                     <div className="form-label-group">
                       <input
                         type="password"
@@ -82,6 +97,8 @@ export default function Register() {
                         className="form-control"
                         onChange={handleChange}
                         placeholder="Password"
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                        title="Must contain at least one digit, one uppercase and lowercase letter, and at least 6 characters"
                         required
                       />
                       <label for="inputPassword">Password</label>

@@ -21,7 +21,7 @@ exports.login = async (req, res) => {
   const result = await db.User.findOne({ where: { email: req.body.email } });
 
   if (!result) {
-    return res.status(401).json({ msg: 'User not found' });
+    return res.status(401).json({ msg: 'Account Not Found' });
   }
 
   if (bcrypt.compareSync(req.body.password, result.password)) {
@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
       userId: result.id
     });
   } else {
-    return res.status(403).json({ msg: 'Invalid credentials' });
+    return res.status(403).json({ msg: 'Invalid Credentials Entered' });
   }
 };
 
