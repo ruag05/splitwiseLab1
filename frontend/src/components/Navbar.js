@@ -6,7 +6,8 @@ import logout from "../utils/logout";
 export default function Navbar() {
   const auth = useContext(authContext).state;
   return (
-    <nav className="navbar navbar-expand-sm navbar-light bg-light">
+    <nav className="navbar navbar-expand-sm navbar-light bg-transparent">
+    <div className="splitwise-icon"></div>
       <Link className="navbar-brand" to="/">
         Splitwise
       </Link>

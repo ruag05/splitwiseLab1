@@ -14,6 +14,9 @@ function App() {
       <Router>
         <Navbar />
         <Switch>
+          <Route path="/home" exact>
+            <Home />
+          </Route>
           <Route path="/login" exact>
             <Login />
           </Route>
@@ -21,15 +24,15 @@ function App() {
             <Register />
           </Route>
           <ProtectedRoutes path="/profile" exact>
-          <Profile />
-        </ProtectedRoutes>
+            <Profile />
+          </ProtectedRoutes>
           <ProtectedRoutes path="/" exact>
             <Home />
           </ProtectedRoutes>
           <ProtectedRoutes path="/groups/create" exact>
-          <Groups />
-        </ProtectedRoutes>
-        <ProtectedRoutes path="/groups/invite" exact>
+            <Groups />
+          </ProtectedRoutes>
+          <ProtectedRoutes path="/groups/invite" exact>
             <CreateInvite />
           </ProtectedRoutes>         
           <Route>

@@ -22,11 +22,31 @@ code {
 }
 
 .bg-image {
-  background-image: url('./images/splitwise.PNG');
+  background-image: url('./images/splitwise-gif.gif');
   background-size: center;
   background-repeat: no-repeat;
-  
   background-position-y: 35%;
+}
+.bg-image-home {
+  background-image: url('./images/splitwise-home-gif.gif');
+  background-size: center;
+  background-repeat: no-repeat;
+}
+
+.splitwise-icon {
+  background-image: url('./images/splitwise-icon.png');
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  background-size: cover;
+  margin-right: 5px;
+  
+}
+.navbar-brand
+{
+  font-size: 1.5em;
+  margin: 0px;
+  margin-top: 10px;
 }
 
 .login-heading {

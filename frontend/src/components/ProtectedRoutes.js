@@ -13,7 +13,7 @@ export default function ProtectedRoutes({ children, ...rest }) {
         ) : (
           <Redirect
             to={{
-              pathname: "/login",
+              pathname: "/home",
               state: { from: location },
             }}
           />

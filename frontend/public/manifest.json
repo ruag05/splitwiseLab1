@@ -1,9 +1,9 @@
 {
-  "short_name": "React App",
+  "short_name": "Splitwise App",
   "name": "Create React App Sample",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "splitwise-icon-x32.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },

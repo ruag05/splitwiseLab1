@@ -29,7 +29,8 @@ export default function Register() {
         const { data } = await axios.post("/users/register", user)
           .then(() => {
             alert.success("Account Created Successfully");
-            history.push("/Login");
+            dispatch({ type: "LOG_IN" });
+            history.push("/dashboard");
           }, (error) => {
             console.log("Input validation failed");
             if (error.response.status === 400)
@@ -117,10 +118,11 @@ export default function Register() {
                     </div>
                     <button
                       className="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
-                      type="submit"
-                    >
+                      type="submit">
                       Register
                     </button>
+                    <a href="https://www.splitwise.com/terms" style={{fontSize: 12}}>
+                    By registering, you accept the Splitwise Terms of Service</a>
                   </form>
                 </div>
               </div>
