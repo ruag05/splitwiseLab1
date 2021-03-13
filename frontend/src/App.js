@@ -7,6 +7,8 @@ import Register from "./pages/Register";
 import CreateInvite from "./components/CreateInvite";
 import Groups from "./pages/CreateGroups";
 import Profile from "./pages/Profile";
+import MyGroups from "./components/MyGroups";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
   return (
@@ -15,6 +17,9 @@ function App() {
         <Navbar />
         <Switch>
           <Route path="/home" exact>
+            <Home />
+          </Route>
+          <Route path="/" exact>
             <Home />
           </Route>
           <Route path="/login" exact>
@@ -26,11 +31,14 @@ function App() {
           <ProtectedRoutes path="/profile" exact>
             <Profile />
           </ProtectedRoutes>
-          <ProtectedRoutes path="/" exact>
-            <Home />
+          <ProtectedRoutes path="/dashboard" exact>
+            <Dashboard />
           </ProtectedRoutes>
           <ProtectedRoutes path="/groups/create" exact>
             <Groups />
+          </ProtectedRoutes>
+          <ProtectedRoutes path="/groups/" exact>
+            <MyGroups />
           </ProtectedRoutes>
           <ProtectedRoutes path="/groups/invite" exact>
             <CreateInvite />
@@ -48,5 +56,4 @@ function App() {
     </div>
   );
 }
-
 export default App;

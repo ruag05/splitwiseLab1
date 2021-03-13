@@ -95,9 +95,12 @@ export default function Login() {
         </div>
         <footer class="bg-light text-lg-start">
           <div class="text-center p-n33" >Made by Ruchir Agarwal
-          <br />
-          <a class="text-dark" href="https://github.com/ruchiragarwal/">GitHub</a>
-          </div>
+          <br />   
+          <div className='buttonflex'>
+                    <a href="https://www.linkedin.com/in/ruchir-agarwal-7b2713a7/" target="_blank" className='linkedin'>Linked <i className="fab fa-linkedin"></i></a>
+                    <a href="https://github.com/ruchiragarwal/" target="_blank" className='linkedin github'>Github <i className="fab fa-github"></i></a>
+                </div>       
+          </div>         
         </footer>
       </div>
     </div>

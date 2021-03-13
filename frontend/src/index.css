@@ -29,7 +29,7 @@ code {
 }
 .bg-image-home {
   background-image: url('./images/splitwise-home-gif.gif');
-  background-size: center;
+  background-size: 100%;
   background-repeat: no-repeat;
 }
 
@@ -121,7 +121,35 @@ code {
   font-size: 12px;
   color: #777;
 }
-
+.linkedin {
+  color: #fff;
+  height: auto;
+  margin-top: 20px;
+  margin-right: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 14px;
+  background: #1177B5;
+  border: 1px grey solid;
+  font-weight: bold;
+  height: 30px;
+  width: 75px;
+  border-radius: 5px;
+  border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.05);
+}
+.linkedin:hover {
+  box-shadow: none;
+  background: rgb(15, 104, 160);
+}
+.github {
+  background-color: #239A3B;
+}
+.github:hover {
+  background-color: rgb(30, 146, 53);
+}
 /* Fallback for Edge
 -------------------------------------------------- */
 

@@ -27,7 +27,7 @@ export default function Navbar() {
           {auth.loggedIn ? (
             <>
               <li className="nav-item active">
-                <Link className="nav-link" to="/">
+                <Link className="nav-link" to="/Dashboard">
                   Home <span className="sr-only">(current)</span>
                 </Link>
               </li>
