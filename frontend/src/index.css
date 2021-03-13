@@ -40,8 +40,9 @@ code {
   height: 60px;
   background-size: cover;
   margin-right: 5px;
-  
+  margin-top: -0.75em;
 }
+
 .navbar-brand
 {
   font-size: 1.5em;

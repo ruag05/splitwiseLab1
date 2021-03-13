@@ -77,9 +77,9 @@ export default function Profile() {
   }, []);
 
   return (
-    <div className="container">
-      <h1>Your Account</h1>
-      <br />
+    <div className="container-sm">
+    <br/>
+      <h1 className="ml-2">Your Account</h1>
       <div className="row">
         <div className="col-md-4">
           <img
@@ -93,15 +93,14 @@ export default function Profile() {
             }
             alt="profile"
           />
+          <p className="mt-2 ml-0.75">Choose Your Avatar</p>
           <form onSubmit={handleImageUpload}>
-            <input
-              className="form-control"
+            <input            
               name="photo"
               type="file"
-              onChange={onFileChangeHandler}
-              className="mt-3"
+              onChange={onFileChangeHandler}             
             />
-            <button type="submit" className="btn btn-success ml-auto mr-3 mt-4">
+            <button type="submit" className="btn btn-success ml-auto mr-3 mt-3">
               Update
             </button>
           </form>

@@ -93,6 +93,12 @@ export default function Login() {
             </div>
           </div>
         </div>
+        <footer class="bg-light text-lg-start">
+          <div class="text-center p-n33" >Made by Ruchir Agarwal
+          <br />
+          <a class="text-dark" href="https://github.com/ruchiragarwal/">GitHub</a>
+          </div>
+        </footer>
       </div>
     </div>
   );

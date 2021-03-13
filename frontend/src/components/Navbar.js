@@ -6,7 +6,7 @@ import logout from "../utils/logout";
 export default function Navbar() {
   const auth = useContext(authContext).state;
   return (
-    <nav className="navbar navbar-expand-sm navbar-light bg-transparent">
+    <nav className="navbar navbar-expand-sm navbar-light bg-transparent mt-n1">
     <div className="splitwise-icon"></div>
       <Link className="navbar-brand" to="/">
         Splitwise
@@ -51,7 +51,7 @@ export default function Navbar() {
                   Profile
                 </Link>
               </li>
-              <li className="nav-item active">
+              <li className="nav-item active mt-n2">
                 <Link className="nav-link" to="/">
                   <button className="btn btn-danger" onClick={logout}>
                     Logout
