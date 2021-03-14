@@ -8,11 +8,11 @@ splitwise is a clone application of Splitwise, a tool that allows friends/roomma
 
 The clone application is developed as part of Laboratory#1, an academic undertaking at San Jose State University towards Masters in Software Engineering and is intended to boost understanding of web-development technologies/frameworks and is build for academic purposes only.
 
-## Using <project_name>
+## Using splitwise
 
 //Add usage steps, in the end.
 
-## Contributing to <project_name>
+## Contributing to splitwise
 To contribute to splitwise, follow these steps:
 
 1. Fork this repository.
