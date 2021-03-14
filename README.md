@@ -1,7 +1,8 @@
 # splitwise
 
-![GitHub repo size](https://img.shields.io/github/repo-size/scottydocs/README-template.md)
-![GitHub contributors](https://img.shields.io/github/contributors/scottydocs/README-template.md)
+![GitHub contributors](https://img.shields.io/github/contributors/ruchiragarwal/splitwise)
+![GitHub repo size](https://img.shields.io/github/repo-size/ruchiragarwal/splitwise)
+
 
 splitwise is a clone application of Splitwise, a tool that allows friends/roommates to split bills and helps keep track of the expenses with 100% transparency. 
 
