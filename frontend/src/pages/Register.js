@@ -30,6 +30,7 @@ export default function Register() {
           .then(() => {
             alert.success("Account Created Successfully");
             dispatch({ type: "LOG_IN" });
+            history.push("/login");
             history.push("/dashboard");
           }, (error) => {
             console.log("Input validation failed");
@@ -50,87 +51,87 @@ export default function Register() {
     if (auth.loggedIn) {
       history.push("/");
     }
-  });
+  }, [auth.loggedIn, history]);
 
-  return (
-    <div className="container-fluid">
-      <div className="row no-gutter">
-        <div className="col-md-4 col-lg-4">
-          <div className="login d-flex align-items-center py-5">
-            <div className="container">
-              <div className="row">
-                <div className="col-md-9 col-lg-8 mx-auto">
-                  <h3 className="login-heading mb-4 px-3">Create account</h3>
-                  <form onSubmit={handleRegister}>
-                    <div className="form-label-group">
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        className="form-control"
-                        onChange={handleChange}
-                        placeholder="Name"
-                        pattern="[a-zA-Z]{4,16}"
-                        title="Must be 4 to 16 characters in length"
-                        required
-                        autofocus
-                      />
-                      <label for="name">Name</label>
-                    </div>
-                    <div className="form-label-group">
-                      <input
-                        type="email"
-                        id="inputEmail"
-                        name="email"
-                        className="form-control"
-                        onChange={handleChange}
-                        placeholder="Email address"
-                        required
-                        autofocus
-                      />
-                      <label for="inputEmail">Email address</label>
-                    </div>
-                    <div className="form-label-group">
-                      <input
-                        type="password"
-                        id="inputPassword"
-                        name="password"
-                        className="form-control"
-                        onChange={handleChange}
-                        placeholder="Password"
-                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
-                        title="Must contain at least one digit, one uppercase and lowercase letter, and at least 6 characters"
-                        required
-                      />
-                      <label for="inputPassword">Password</label>
-                    </div>
-                    <div className="form-label-group">
-                      <input
-                        type="password"
-                        id="inputcPassword"
-                        name="cpassword"
-                        className="form-control"
-                        onChange={handleChange}
-                        placeholder="Password"
-                        required
-                      />
-                      <label for="inputcPassword">Confirm Password</label>
-                    </div>
-                    <button
-                      className="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
-                      type="submit">
-                      Register
+return (
+  <div className="container-fluid">
+    <div className="row no-gutter">
+      <div className="col-md-4 col-lg-4">
+        <div className="login d-flex align-items-center py-5">
+          <div className="container">
+            <div className="row">
+              <div className="col-md-9 col-lg-8 mx-auto">
+                <h3 className="login-heading mb-4 px-3">Create account</h3>
+                <form onSubmit={handleRegister}>
+                  <div className="form-label-group">
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      className="form-control"
+                      onChange={handleChange}
+                      placeholder="Name"
+                      pattern="[a-zA-Z]{4,16}"
+                      title="Must be 4 to 16 characters in length"
+                      required
+                      autofocus
+                    />
+                    <label for="name">Name</label>
+                  </div>
+                  <div className="form-label-group">
+                    <input
+                      type="email"
+                      id="inputEmail"
+                      name="email"
+                      className="form-control"
+                      onChange={handleChange}
+                      placeholder="Email address"
+                      required
+                      autofocus
+                    />
+                    <label for="inputEmail">Email address</label>
+                  </div>
+                  <div className="form-label-group">
+                    <input
+                      type="password"
+                      id="inputPassword"
+                      name="password"
+                      className="form-control"
+                      onChange={handleChange}
+                      placeholder="Password"
+                      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                      title="Must contain at least one digit, one uppercase and lowercase letter, and at least 6 characters"
+                      required
+                    />
+                    <label for="inputPassword">Password</label>
+                  </div>
+                  <div className="form-label-group">
+                    <input
+                      type="password"
+                      id="inputcPassword"
+                      name="cpassword"
+                      className="form-control"
+                      onChange={handleChange}
+                      placeholder="Password"
+                      required
+                    />
+                    <label for="inputcPassword">Confirm Password</label>
+                  </div>
+                  <button
+                    className="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
+                    type="submit">
+                    Register
                     </button>
-                    <a href="https://www.splitwise.com/terms" style={{fontSize: 12}}>
+                  <a href="https://www.splitwise.com/terms" style={{ fontSize: 12 }}>
                     By registering, you accept the Splitwise Terms of Service</a>
-                  </form>
-                </div>
+                </form>
               </div>
             </div>
           </div>
         </div>
-        <div className="d-none d-md-flex col-lg-4 col-lg-8 bg-image"></div>
       </div>
+      <div className="d-none d-md-flex col-lg-4 col-lg-8 bg-image"></div>
     </div>
-  );
+  </div>
+);
 }
