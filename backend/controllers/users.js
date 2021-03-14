@@ -154,10 +154,12 @@ exports.getAllEmails = async (req, res) => {
 
 exports.getAllGroups = async (req, res) => {
   try {
+    console.log("__ req.user.userId __ "+ req.user.userId);
     const user = await db.User.findByPk(req.user.userId);
     // users.forEach((element) => {
     //   if (element.id != req.user.userId) emails.push(element.email);
     // });
+   
     return res.json({ groups: user.groups });
   } catch (error) {
     console.log(error);

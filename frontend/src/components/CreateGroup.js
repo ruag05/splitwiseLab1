@@ -10,7 +10,7 @@ export default function CreateGroup() {
     e.preventDefault();
     let data = new FormData();
     for (let [key, value] of Object.entries(state)) {
-      data.append(key, value);
+      data.append(key, value);     
     }
     axios
       .post("/groups/create", data)
@@ -20,7 +20,7 @@ export default function CreateGroup() {
       })
       .catch((err) => {
         if (err.response?.data.errors) {
-          err.response?.data.errors.map((e) => alert.error(e));
+          err.response?.data.errors.map((e) => alert.error("Error is" + e));
         } else {
           alert.error("Something went wrong");
         }

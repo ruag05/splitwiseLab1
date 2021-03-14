@@ -12,9 +12,26 @@ exports.createGroup = async (req, res) => {
       photo: req.body.photo,
       author: req.user.userId,
     });
+
+    console.log("Testing"+req.user.userId);
+
+    //add author to the group created
+    const group = await db.Group.findOne({ where: { id: data.id } });
+    await group.update({ members: [...group.members, data.author] });
+
+    //add group as one of author's groups
+    const user = await db.User.findOne({ where: { id: data.author } });
+
+    console.log("User id is"+user.id);
+    console.log("User groups is"+user.groups.length);
+
+    console.log("req user id "+req.user.userId);
+    console.log("req group id "+req.user.groupId);
+    console.log(" group id "+group.id);
+    await user.update({ groups: [...user.groups, group.id] });
+    
     return res.json({ msg: 'New group created', group: { id: data.id, photo: data.photo } });
   } catch (error) {
-    // console.log(error);
     let errors = [];
     if (error.error) {
       error.errors.map((e) => {
