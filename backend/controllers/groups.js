@@ -13,7 +13,7 @@ exports.createGroup = async (req, res) => {
       author: req.user.userId,
     });
 
-    console.log("Testing"+req.user.userId);
+    console.log('Testing' + req.user.userId);
 
     //add author to the group created
     const group = await db.Group.findOne({ where: { id: data.id } });
@@ -22,14 +22,14 @@ exports.createGroup = async (req, res) => {
     //add group as one of author's groups
     const user = await db.User.findOne({ where: { id: data.author } });
 
-    console.log("User id is"+user.id);
-    console.log("User groups is"+user.groups.length);
+    console.log('User id is' + user.id);
+    console.log('User groups is' + user.groups.length);
 
-    console.log("req user id "+req.user.userId);
-    console.log("req group id "+req.user.groupId);
-    console.log(" group id "+group.id);
+    console.log('req user id ' + req.user.userId);
+    console.log('req group id ' + req.user.groupId);
+    console.log(' group id ' + group.id);
     await user.update({ groups: [...user.groups, group.id] });
-    
+
     return res.json({ msg: 'New group created', group: { id: data.id, photo: data.photo } });
   } catch (error) {
     let errors = [];
@@ -150,7 +150,7 @@ exports.getById = async (req, res) => {
 exports.leaveGroup = async (req, res) => {
   try {
     // TODO:: MAKE SURE TO CHECK FOR ANY DUE BALANCE BEFORE LEAVING THE GROUP
-    const user = await db.User.findOne({ where: { id: req.body.userId } });
+    const user = await db.User.findOne({ where: { id: req.user.userId } });
     if (!user) {
       return res.status(400).json({ errors: ['User not found!'] });
     }
@@ -159,8 +159,22 @@ exports.leaveGroup = async (req, res) => {
       return res.status(400).json({ errors: ['Group not found!'] });
     }
 
-    console.log(user.groups.filter((g) => g.id == group.id));
-    console.log(group.members.filter((g) => g.id == user.id));
+    const ts = await db.Transaction.findAll({
+      where: { borrowerId: req.user.userId, groupId: req.body.groupId },
+    });
+
+    console.log(ts);
+
+    if (ts.length > 0) {
+      return res.status(400).json({
+        errors: [
+          'You have some unsettled transactions to be settle. Please do that before leaving the group',
+        ],
+      });
+    }
+
+    // console.log(user.groups.filter((g) => g.id == group.id));
+    // console.log(group.members.filter((g) => g.id == user.id));
     await group.update({ members: [...group.members.filter((id) => id != user.id)] });
     await user.update({ groups: [...user.groups.filter((id) => id != group.id)] });
     return res.json({ msg: 'Group left' });
@@ -175,5 +189,65 @@ exports.leaveGroup = async (req, res) => {
     } else {
       return res.status(500).json({ errors: [error.message] });
     }
+  }
+};
+
+exports.addExpense = async (req, res) => {
+  const exp = {
+    amount: req.body.amount,
+    title: req.body.title,
+    author: req.user.userId,
+    groupId: req.body.gid,
+  };
+  try {
+    const g = await db.Group.findByPk(req.body.gid);
+    g.members.map(async (mem) => {
+      if (mem == req.user.userId) {
+        return;
+      }
+      try {
+        await db.Transaction.create({ ...exp, borrowerId: mem });
+      } catch (error) {
+        console.log(error);
+        // return res.status(500).json({ errors: [error.message] });
+      }
+    });
+    res.json({ msg: 'Success' });
+  } catch (error) {
+    return res.status(500).json({ errors: [error.message] });
+  }
+};
+
+exports.getTransByGId = async (req, res) => {
+  try {
+    const g = await db.Transaction.findAll({
+      where: { groupId: req.params.gid },
+    });
+    return res.json({ trans: g });
+  } catch (error) {
+    return res.json({ errors: [error.message] });
+  }
+};
+
+exports.getStats = async (req, res) => {
+  try {
+    const authored = await db.Transaction.findAll({
+      where: { author: req.user.userId },
+    });
+    const borrowed = await db.Transaction.findAll({
+      where: { borrowerId: req.user.userId },
+    });
+    let totalOwened = 0;
+    authored.map((a) => {
+      totalOwened += parseInt(a.amount, 10);
+    });
+    let totalBorrowed = 0;
+    borrowed.map((a) => {
+      totalBorrowed += parseInt(a.amount, 10);
+    });
+    return res.json({ authored, borrowed, totalOwened, totalBorrowed });
+  } catch (error) {
+    console.log(error);
+    return res.json({ errors: [error.message] });
   }
 };

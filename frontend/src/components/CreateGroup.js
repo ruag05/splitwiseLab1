@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useAlert } from "react-alert";
+import CreateInvite from "./CreateInvite";
 
 export default function CreateGroup() {
   const [state, setState] = useState({ name: "", photo: null });
@@ -10,7 +11,7 @@ export default function CreateGroup() {
     e.preventDefault();
     let data = new FormData();
     for (let [key, value] of Object.entries(state)) {
-      data.append(key, value);     
+      data.append(key, value);
     }
     axios
       .post("/groups/create", data)
@@ -70,6 +71,7 @@ export default function CreateGroup() {
           </button>
         </form>
       </div>
+      <CreateInvite />
     </div>
   );
 }

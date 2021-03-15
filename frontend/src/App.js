@@ -9,6 +9,7 @@ import Groups from "./pages/CreateGroups";
 import Profile from "./pages/Profile";
 import MyGroups from "./components/MyGroups";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import GroupInfo from "./components/GroupInfo";
 
 function App() {
   return (
@@ -42,7 +43,10 @@ function App() {
           </ProtectedRoutes>
           <ProtectedRoutes path="/groups/invite" exact>
             <CreateInvite />
-          </ProtectedRoutes>         
+          </ProtectedRoutes>
+          <ProtectedRoutes path="/groups/:gid" exact>
+            <GroupInfo />
+          </ProtectedRoutes>
           <Route>
             <h2 className="text-center mt-5">Page Not found</h2>
             <div className="text-center">

@@ -6,6 +6,9 @@ const {
   leaveGroup,
   allUserIvites,
   getById,
+  addExpense,
+  getTransByGId,
+  getStats,
 } = require('../controllers/groups');
 const { checkAuth } = require('../utils/auth');
 const { uploadMiddleware } = require('../utils/upload');
@@ -36,6 +39,9 @@ router.post('/invite', checkAuth, inviteMember);
 router.post('/leave', checkAuth, leaveGroup);
 router.post('/acceptInvite', checkAuth, acceptInvite);
 router.get('/getInvites', checkAuth, allUserIvites);
+router.get('/getStats', checkAuth, getStats);
+router.get('/getTransactions/:gid', checkAuth, getTransByGId);
+router.post('/addExpense', checkAuth, addExpense);
 router.get('/:id', checkAuth, getById);
 
 module.exports = router;
