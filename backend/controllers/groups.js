@@ -55,6 +55,7 @@ exports.inviteMember = async (req, res) => {
     if (!group) {
       return res.status(400).json({ errors: ['Group not found!'] });
     }
+
     // check if invitation already exists
     const invite = await db.Invite.findOne({
       where: {
@@ -65,6 +66,12 @@ exports.inviteMember = async (req, res) => {
     if (invite) {
       return res.status(400).json({ errors: ['Already invited the user to group!'] });
     }
+
+    // check if user is already member of group   
+    if (group.members.includes(user.id)) {
+      return res.status(400).json({ errors: ['Already member of the group!'] });
+    }
+
     // add new invite
     await db.Invite.create({
       userId: user.id,
