@@ -51,6 +51,6 @@ db.Sequelize = Sequelize;
 //check the current state of the table in the db
 //then perform necessary changes in table to make it match the model
 //i.e., model schema -> table schema
-// db.sequelize.sync({ alter: true, logging: false });
+// db.sequelize.sync({ alter: true, logging: true });
 
 module.exports = db;

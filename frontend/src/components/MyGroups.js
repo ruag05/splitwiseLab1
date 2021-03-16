@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import PendingInvites from "./PendingInvites";
 import axios from "axios";
+import { useAlert } from "react-alert";
 import { Link } from "react-router-dom";
 
 export default function MyGroups() {
+  const alert = useAlert();
   const [gList, setGlist] = useState([]);
   const [grps, setGrps] = useState([]);
+  const [invites, setInvites] = useState([]);
+  const [invGrps, setInvGrps] = useState([]);
+
   useEffect(() => {
     axios
       .get("/users/getGroups")
@@ -15,6 +19,18 @@ export default function MyGroups() {
           axios.get(`/groups/${i}`).then((res) => {
             setGlist((ps) => [...ps, res.data.group]);
             setGrps((ps) => [...ps, res.data.group]);
+          });
+        });
+      })
+      .catch((err) => {});
+
+    axios
+      .get("/groups/getInvites")
+      .then((res) => {
+        setInvites(res.data.invites);
+        res.data.invites.forEach((i) => {
+          axios.get(`/groups/${i.groupId}`).then((res) => {
+            setInvGrps((ps) => [...ps, res.data.group]);
           });
         });
       })
@@ -32,10 +48,62 @@ export default function MyGroups() {
     axios
       .post("/groups/leave", { groupId: id })
       .then((res) => {
-        alert("Group left");
+        setGlist((ps) => []);
+        setGrps((ps) => []);
+        axios
+          .get("/users/getGroups")
+          .then((res) => {
+            // setState(res.data.groups);
+            res.data.groups.forEach((i) => {
+              axios.get(`/groups/${i}`).then((res) => {
+                setGlist((ps) => [...ps, res.data.group]);
+                setGrps((ps) => [...ps, res.data.group]);
+              });
+            });
+          })
+          .catch((err) => {});
+        alert.success("Group left");
       })
       .catch((err) => {
-        alert(err.response.data.errors[0]);
+        alert.error(err.response?.data?.errors[0]);
+      });
+  };
+
+  const handleAccept = (gid) => {
+    const inv = invites.filter((i) => i.groupId === gid);
+    axios
+      .post("/groups/acceptInvite", { inviteId: inv[0].id })
+      .then((res) => {
+        setInvGrps([]);
+        setGrps([]);
+        alert.success("Invitation Accepted");
+        axios
+          .get("/users/getGroups")
+          .then((res) => {
+            // setState(res.data.groups);
+            res.data.groups.forEach((i) => {
+              axios.get(`/groups/${i}`).then((res) => {
+                setGlist((ps) => [...ps, res.data.group]);
+                setGrps((ps) => [...ps, res.data.group]);
+              });
+            });
+          })
+          .catch((err) => {});
+
+        axios
+          .get("/groups/getInvites")
+          .then((res) => {
+            setInvites(res.data.invites);
+            res.data.invites.forEach((i) => {
+              axios.get(`/groups/${i.groupId}`).then((res) => {
+                setInvGrps((ps) => [...ps, res.data.group]);
+              });
+            });
+          })
+          .catch((err) => {});
+      })
+      .catch((err) => {
+        alert.error("Somwthing went wrong");
       });
   };
 
@@ -43,7 +111,26 @@ export default function MyGroups() {
     <div className="container">
       <div className="row">
         <div className="col-md-6">
-          <PendingInvites />
+          <div className="row">
+            <div className="col">
+              <h3>Pending Invites</h3>
+              <ul>
+                {invGrps.map((g) => {
+                  return (
+                    <li key={g.id} className="mb-4">
+                      {g.name}{" "}
+                      <button
+                        className="btn btn-success"
+                        onClick={() => handleAccept(g.id)}
+                      >
+                        Accept
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
         </div>
         <div className="col-md-6">
           <h3>My groups</h3>

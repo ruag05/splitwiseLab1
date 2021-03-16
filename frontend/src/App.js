@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import MyGroups from "./components/MyGroups";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import GroupInfo from "./components/GroupInfo";
+import Recent from "./pages/Recent";
 
 function App() {
   return (
@@ -31,6 +32,9 @@ function App() {
           </Route>
           <ProtectedRoutes path="/profile" exact>
             <Profile />
+          </ProtectedRoutes>
+          <ProtectedRoutes path="/activity" exact>
+            <Recent />
           </ProtectedRoutes>
           <ProtectedRoutes path="/dashboard" exact>
             <Dashboard />

@@ -1,16 +1,12 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Transaction extends Model {
+  class History extends Model {
     static associate(models) {}
   }
-  Transaction.init(
+  History.init(
     {
       author: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      borrowerId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -23,23 +19,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       amount: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
-      },
-      currency: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: 'USD',
-      },
-      settled: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
       },
     },
     {
       sequelize,
-      modelName: 'Transaction',
+      modelName: 'History',
     }
   );
-  return Transaction;
+  return History;
 };

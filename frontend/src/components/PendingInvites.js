@@ -1,11 +1,12 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useAlert } from "react-alert";
+import { useHistory } from "react-router-dom";
 
 export default function PendingInvites() {
   const [state, setState] = useState([]);
   const [grps, setGrps] = useState([]);
-
+  const history = useHistory();
   const alert = useAlert();
   const handleAccept = (gid) => {
     const inv = state.filter((i) => i.groupId === gid);
@@ -13,7 +14,7 @@ export default function PendingInvites() {
       .post("/groups/acceptInvite", { inviteId: inv[0].id })
       .then((res) => {
         alert.success("Invitation Accepted");
-        setState([...state.filter((i) => i.id !== inv[0].id)]);
+        history.push(`/groups/${inv[0].id}`);
       })
       .catch((err) => {
         alert.error("Somwthing went wrong");
@@ -27,7 +28,7 @@ export default function PendingInvites() {
         setState(res.data.invites);
         res.data.invites.forEach((i) => {
           axios.get(`/groups/${i.groupId}`).then((res) => {
-            setGrps([...grps, res.data.group]);
+            setGrps((ps) => [...ps, res.data.group]);
           });
         });
       })

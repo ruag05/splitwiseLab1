@@ -2,6 +2,7 @@ const db = require('../models');
 
 exports.createGroup = async (req, res) => {
   try {
+    console.log(req.user);
     const check = await db.Group.findOne({ where: { name: req.body.name } });
     if (check) {
       return res.status(400).json({ errors: ['Group name already taken'] });
@@ -67,7 +68,7 @@ exports.inviteMember = async (req, res) => {
       return res.status(400).json({ errors: ['Already invited the user to group!'] });
     }
 
-    // check if user is already member of group   
+    // check if user is already member of group
     if (group.members.includes(user.id)) {
       return res.status(400).json({ errors: ['Already member of the group!'] });
     }
@@ -207,7 +208,11 @@ exports.addExpense = async (req, res) => {
     groupId: req.body.gid,
   };
   try {
+    const user = await db.User.findOne({ where: { id: req.user.userId } });
     const g = await db.Group.findByPk(req.body.gid);
+    let l = g.members.length < 1 ? 1 : g.members.length;
+    exp.amount = req.body.amount / l;
+    exp.currency = user.currency;
     g.members.map(async (mem) => {
       if (mem == req.user.userId) {
         return;
@@ -219,6 +224,12 @@ exports.addExpense = async (req, res) => {
         // return res.status(500).json({ errors: [error.message] });
       }
     });
+    await db.History.create({
+      author: req.user.userId,
+      groupId: req.body.gid,
+      title: `User-${req.user.userId} added an expense of ${req.body.amount} for ${req.body.title}`,
+      amount: req.body.amount,
+    });
     res.json({ msg: 'Success' });
   } catch (error) {
     return res.status(500).json({ errors: [error.message] });
@@ -228,7 +239,7 @@ exports.addExpense = async (req, res) => {
 exports.getTransByGId = async (req, res) => {
   try {
     const g = await db.Transaction.findAll({
-      where: { groupId: req.params.gid },
+      where: { groupId: req.params.gid, settled: false },
     });
     return res.json({ trans: g });
   } catch (error) {
@@ -239,7 +250,7 @@ exports.getTransByGId = async (req, res) => {
 exports.getStats = async (req, res) => {
   try {
     const authored = await db.Transaction.findAll({
-      where: { author: req.user.userId },
+      where: { author: req.user.userId, settled: false },
     });
     const borrowed = await db.Transaction.findAll({
       where: { borrowerId: req.user.userId },
@@ -255,6 +266,15 @@ exports.getStats = async (req, res) => {
     return res.json({ authored, borrowed, totalOwened, totalBorrowed });
   } catch (error) {
     console.log(error);
+    return res.json({ errors: [error.message] });
+  }
+};
+
+exports.getTuser = async (req, res) => {
+  try {
+    const us = await db.Transaction.findAll({ where: { author: req.user.userId, settled: false } });
+    return res.json({ users: us });
+  } catch (error) {
     return res.json({ errors: [error.message] });
   }
 };

@@ -9,6 +9,8 @@ const {
   getPic,
   getAllEmails,
   getAllGroups,
+  settle,
+  getAllHistory,
 } = require('../controllers/users');
 const { checkAuth } = require('../utils/auth');
 const { uploadMiddleware } = require('../utils/upload');
@@ -17,7 +19,9 @@ const router = express.Router();
 router.post('/register', register);
 router.post('/login', login);
 router.get('/autoLogin', checkAuth, autoLogin);
-router.post('/updateProfilePic', checkAuth,
+router.post(
+  '/updateProfilePic',
+  checkAuth,
   function (req, res, next) {
     try {
       uploadMiddleware([{ name: 'photo' }])(req, res, (err) => {
@@ -42,8 +46,11 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged Out' });
 });
 
+router.post('/settle', checkAuth, settle);
+
 router.get('/', checkAuth, getById);
 router.get('/getPic', checkAuth, getPic);
+router.get('/getAllHistory', checkAuth, getAllHistory);
 router.get('/getGroups', checkAuth, getAllGroups);
 router.get('/getEmails', checkAuth, getAllEmails);
 

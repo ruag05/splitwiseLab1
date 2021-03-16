@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
 import { useParams } from "react-router";
+import Modal from "react-modal";
 
 Modal.setAppElement("#root");
 
@@ -11,13 +11,14 @@ export default function GroupInfo() {
   const [data, setData] = useState({ title: "", amount: 0 });
   const [trans, setTrans] = useState([]);
   const [stats, setStats] = useState(new Map());
+  const [back, setBack] = useState(new Map());
 
   function openModal() {
     setIsOpen(true);
   }
 
   function afterOpenModal() {
-    // subtitle.style.color = "#f00";
+    subtitle.style.color = "#f00";
   }
 
   function closeModal() {
@@ -32,7 +33,7 @@ export default function GroupInfo() {
 
   const handleAddExpense = (e) => {
     e.preventDefault();
-    console.log(data, gid);
+    // console.log(data, gid);
     axios
       .post("/groups/addExpense", { ...data, gid })
       .then(() => {
@@ -68,7 +69,15 @@ export default function GroupInfo() {
       }
     });
     // console.log(stats);
-    setStats(stats);
+    const b = new Map();
+    trans.forEach((t) => {
+      if (b.has(t.borrowerId)) {
+        b.set(t.borrowerId, parseInt(b.get(t.borrowerId), 10) + +t.amount);
+      } else {
+        b.set(t.borrowerId, parseInt(t.amount, 10));
+      }
+    });
+    setBack(b);
   };
 
   useEffect(() => {
@@ -82,26 +91,39 @@ export default function GroupInfo() {
   return (
     <div>
       <button onClick={openModal}>Add Expense</button>
-      <Modal  className="custom-modal-style"
+      <Modal
         isOpen={modalIsOpen}
         onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
-        contentLabel="Add Expense">
-        <h2 className="add-a-bill">Add an expense
-                    <button onClick={closeModal} className="X">X</button></h2>
+        contentLabel="Add Expense"
+      >
+        <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Add New Expense</h2>
         <hr />
         <form onSubmit={handleAddExpense}>
-          <div className='rightinput'>
-            <input className='desc' type="text" placeholder="Enter a description" name="title" value={data.title} onChange={handleChange} />
-            <div className='amount'><div className='dollar'>$</div>
-              <input className="amtinput" type="number" step="0.01" placeholder="0.00" name="amount" required
-                value={data.amount} onChange={handleChange} />
-            </div>
-          </div>
-          <div className='buttons'>
-            <button onClick={closeModal} className="cancelbutton">Cancel</button>
-            <input type="submit" value="Save" className="savebutton" />
-          </div>          
+          <input
+            type="text"
+            name="title"
+            placeholder="Enter Expense Title"
+            required
+            value={data.title}
+            onChange={handleChange}
+          />
+          <br />
+          <br />
+          <input
+            type="number"
+            min="1"
+            placeholder="Enter Amount"
+            name="amount"
+            required
+            value={data.amount}
+            onChange={handleChange}
+          />
+          <br />
+          <br />
+          <input type="submit" value="Add" />
+          <hr />
+          <button onClick={closeModal}>close</button>
         </form>
       </Modal>
       <div className="container">
@@ -110,6 +132,7 @@ export default function GroupInfo() {
             <ul>
               {trans.map((t) => {
                 const d = new Date(t.createdAt);
+
                 return (
                   <li key={t.id}>
                     <span>{d.toDateString()}</span> <br />
@@ -134,6 +157,18 @@ export default function GroupInfo() {
                   </p>
                 );
               })}
+              {Array.from(stats).length < 1 ? "Nothing to show" : null}
+            </div>
+            <div className="">
+              {Array.from(back).map((st) => {
+                // console.log(st);
+                return (
+                  <p>
+                    User {st[0]} will get back {st[1]}
+                  </p>
+                );
+              })}
+              {/* {Array.from(back).length < 1 ? "Nothing to show" : null} */}
             </div>
           </div>
         </div>

@@ -34,7 +34,11 @@ export default function CreateGroup() {
           style={{ maxWidth: "300px" }}
           src={
             state.photo
-              ? `/uploads/${state.photo}`
+              ? typeof state.photo === "string"
+                ? `/uploads/${state.photo}`
+                : `https://ui-avatars.com/api/?size=256&name=${state.name
+                    .split(" ")
+                    .join("+")}`
               : `https://ui-avatars.com/api/?size=256&name=${state.name
                   .split(" ")
                   .join("+")}`

@@ -2,8 +2,15 @@ import "./Dashboard.css";
 import Sidebar from "./Sidebar";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Modal from "react-modal";
+
+Modal.setAppElement("#root");
 
 export default function Dashboard() {
+  var subtitle;
+  const [borrowerId, setBorrowerId] = useState(null);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [sUsers, setSUsers] = useState([]);
   const [data, setData] = useState({
     totalBorrowed: 0,
     totalOwened: 0,
@@ -18,7 +25,54 @@ export default function Dashboard() {
         setData(res.data);
       })
       .catch(console.log);
+    axios
+      .get(`/groups/getTusers`)
+      .then((res) => {
+        let users = [];
+        res.data.users.map((u) => {
+          if (users.includes(u.borrowerId)) {
+            // do nothing
+          } else {
+            // add to array
+            return users.push(u.borrowerId);
+          }
+        });
+        setSUsers([...users]);
+        console.log(sUsers);
+      })
+      .catch(console.log);
   }, []);
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function afterOpenModal() {
+    subtitle.style.color = "#f00";
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  const handleSettle = (e) => {
+    e.preventDefault();
+    console.log(borrowerId);
+    if (borrowerId === "none") {
+      alert("Please select a user first");
+      return;
+    }
+    if (!borrowerId) {
+      alert("Please select a user to settle with");
+      return;
+    }
+    axios
+      .post("/users/settle", { borrowerId })
+      .then((res) => {
+        alert("Successfully settled all with the user.");
+      })
+      .catch((err) => {});
+  };
 
   return (
     <nav>
@@ -41,13 +95,48 @@ export default function Dashboard() {
               <h1 className="dashboardtitle">Dashboard</h1>
               <div className="dashbuttons">
                 <button className="dash-button">Add A Bill</button>
-                <a className="dash-settle-button">Settle Up</a>
+                <button className="dash-button" onClick={openModal}>
+                  Settle Up
+                </button>
+                <Modal
+                  isOpen={modalIsOpen}
+                  onAfterOpen={afterOpenModal}
+                  onRequestClose={closeModal}
+                  contentLabel="Add Expense"
+                >
+                  <h2 ref={(_subtitle) => (subtitle = _subtitle)}>
+                    Add New Expense
+                  </h2>
+                  <hr />
+                  <form onSubmit={handleSettle}>
+                    <select
+                      name="borrowerId"
+                      onChange={(e) => {
+                        setBorrowerId(e.target.value);
+                      }}
+                    >
+                      <option value="none" key="none">
+                        Select
+                      </option>
+                      {sUsers.map((u) => (
+                        <option value={u} key={u}>
+                          User-{u}
+                        </option>
+                      ))}
+                    </select>
+                    <br />
+                    <br />
+                    <input type="submit" value="Settle" />
+                    <hr />
+                    <button onClick={closeModal}>close</button>
+                  </form>
+                </Modal>
               </div>
             </nav>
             <div className="dashbottom">
               <div className="flextotalbalanc">
                 <p className="titleowe">total balance</p>
-                <p>$ {data.totalOwened - data.totalBorrowed}</p>
+                <p>$ {data.totalOwened - data.totalBorrowed || 0}</p>
               </div>
               <div className="flexowed">
                 <p className="titleowe">you owe</p>
@@ -63,19 +152,21 @@ export default function Dashboard() {
             <div className="col-6">
               <strong>You owe</strong>
               <hr />
-              {data.borrowed.map((ele, i) => (
-                <p className="text-danger" key={i}>
-                  You owe {ele.amount} to user {ele.author}
-                </p>
-              ))}
+              {data.borrowed &&
+                data.borrowed.map((ele, i) => (
+                  <p className="text-danger" key={i}>
+                    You owe {ele.amount} to user {ele.author}
+                  </p>
+                ))}
             </div>
             <div className="col-6">
               <strong>You are owened</strong>
-              {data.authored.map((ele, i) => (
-                <p className="text-success" key={i}>
-                  User {ele.borrowerId} owes you {ele.amount}
-                </p>
-              ))}
+              {data.authored &&
+                data.authored.map((ele, i) => (
+                  <p className="text-success" key={i}>
+                    User {ele.borrowerId} owes you {ele.amount}
+                  </p>
+                ))}
             </div>
           </div>
         </nav>
