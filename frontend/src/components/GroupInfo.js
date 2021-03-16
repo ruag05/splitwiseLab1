@@ -17,7 +17,7 @@ export default function GroupInfo() {
   }
 
   function afterOpenModal() {
-    subtitle.style.color = "#f00";
+    // subtitle.style.color = "#f00";
   }
 
   function closeModal() {
@@ -82,39 +82,26 @@ export default function GroupInfo() {
   return (
     <div>
       <button onClick={openModal}>Add Expense</button>
-      <Modal
+      <Modal  className="custom-modal-style"
         isOpen={modalIsOpen}
         onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
-        contentLabel="Add Expense"
-      >
-        <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Add New Expense</h2>
+        contentLabel="Add Expense">
+        <h2 className="add-a-bill">Add an expense
+                    <button onClick={closeModal} className="X">X</button></h2>
         <hr />
         <form onSubmit={handleAddExpense}>
-          <input
-            type="text"
-            name="title"
-            placeholder="Enter Expense Title"
-            required
-            value={data.title}
-            onChange={handleChange}
-          />
-          <br />
-          <br />
-          <input
-            type="number"
-            min="1"
-            placeholder="Enter Amount"
-            name="amount"
-            required
-            value={data.amount}
-            onChange={handleChange}
-          />
-          <br />
-          <br />
-          <input type="submit" value="Add" />
-          <hr />
-          <button onClick={closeModal}>close</button>
+          <div className='rightinput'>
+            <input className='desc' type="text" placeholder="Enter a description" name="title" value={data.title} onChange={handleChange} />
+            <div className='amount'><div className='dollar'>$</div>
+              <input className="amtinput" type="number" step="0.01" placeholder="0.00" name="amount" required
+                value={data.amount} onChange={handleChange} />
+            </div>
+          </div>
+          <div className='buttons'>
+            <button onClick={closeModal} className="cancelbutton">Cancel</button>
+            <input type="submit" value="Save" className="savebutton" />
+          </div>          
         </form>
       </Modal>
       <div className="container">
@@ -123,7 +110,6 @@ export default function GroupInfo() {
             <ul>
               {trans.map((t) => {
                 const d = new Date(t.createdAt);
-
                 return (
                   <li key={t.id}>
                     <span>{d.toDateString()}</span> <br />
