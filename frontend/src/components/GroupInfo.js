@@ -68,6 +68,7 @@ export default function GroupInfo() {
         stats.set(t.borrowerId, parseInt(t.amount, 10));
       }
     });
+    setStats(stats);
     // console.log(stats);
     const b = new Map();
     trans.forEach((t) => {
@@ -150,18 +151,16 @@ export default function GroupInfo() {
             <strong>Group balance</strong>
             <div className="">
               {Array.from(stats).map((st) => {
-                // console.log(st);
                 return (
                   <p>
                     User {st[0]} owes {st[1]}
                   </p>
                 );
               })}
-              {Array.from(stats).length < 1 ? "Nothing to show" : null}
+              {/* {Array.from(stats).length < 1 ? "Nothing to show" : null} */}
             </div>
             <div className="">
               {Array.from(back).map((st) => {
-                // console.log(st);
                 return (
                   <p>
                     User {st[0]} will get back {st[1]}

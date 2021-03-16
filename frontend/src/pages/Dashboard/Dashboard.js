@@ -70,6 +70,7 @@ export default function Dashboard() {
       .post("/users/settle", { borrowerId })
       .then((res) => {
         alert("Successfully settled all with the user.");
+        closeModal();
       })
       .catch((err) => {});
   };

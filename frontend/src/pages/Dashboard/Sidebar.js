@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import axios from "axios";
 import "./Sidebar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { faFlag } from "@fortawesome/free-solid-svg-icons";
 
 const LeftNav = () => {
@@ -53,7 +53,7 @@ const LeftNav = () => {
       {friends.map((friend) => (
         <p className="each-element">
           <span className="mx-2">
-            <FontAwesomeIcon icon={faUsers} color="grey" />
+            <FontAwesomeIcon icon={faUser} color="grey" />
           </span>
           {friend}
         </p>

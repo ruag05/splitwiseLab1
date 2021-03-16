@@ -253,7 +253,7 @@ exports.getStats = async (req, res) => {
       where: { author: req.user.userId, settled: false },
     });
     const borrowed = await db.Transaction.findAll({
-      where: { borrowerId: req.user.userId },
+      where: { borrowerId: req.user.userId, settled: false },
     });
     let totalOwened = 0;
     authored.map((a) => {

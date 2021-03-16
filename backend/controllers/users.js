@@ -189,11 +189,18 @@ exports.settle = async (req, res) => {
       { settled: true },
       { where: { author: req.user.userId, borrowerId: req.body.borrowerId } }
     );
+    await db.Transaction.update(
+      { settled: true },
+      { where: { borrowerId: req.user.userId, author: req.body.borrowerId } }
+    );
     const ts = await db.Transaction.findAll({
       where: { author: req.user.userId, borrowerId: req.body.borrowerId },
     });
-    // console.log(ts);
-    // return;
+    // const ts2 = await db.Transaction.findAll({
+    //   where: { borrowerId: req.user.userId, author: req.body.borrowerId },
+    // });
+
+    // const ts = [...ts1, ...ts2];
     if (ts) {
       ts.forEach(async (t) => {
         await db.History.create({
