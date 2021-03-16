@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import "./Sidebar.css";
 import { Link, NavLink } from "react-router-dom";
 import axios from "axios";
+import "./Sidebar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import { faFlag } from "@fortawesome/free-solid-svg-icons";
+
 const LeftNav = () => {
-  let friends = ["Ruchir", "Praveen", "John", "Maria"];
-  let usernames = ["Naren", "Amit", "Rahul", "Serena"];
+  let friends = ["Naren", "Apoorv", "Manovikas", "Prachal"];
 
   const [grps, setGrps] = useState([]);
   useEffect(() => {
@@ -26,38 +26,39 @@ const LeftNav = () => {
   }, []);
   return (
     <nav className="left-nav">
-      <NavLink to="/dashboard" className="dashlink" activeClassName="is-active">        
+      <NavLink to="/dashboard" className="dashlink" activeClassName="is-active">
         <div className="logoimg2"></div>Dashboard
       </NavLink>
       <NavLink to="/activity" className="dashlink" activeClassName="is-active">
         {" "}
         <span className="mx-2">
-          <FontAwesomeIcon icon={faFlag} color="grey"/>
+          <FontAwesomeIcon icon={faFlag} color="grey" />
         </span>
         Recent Activity
       </NavLink>
-      <h1 className="headers">
-        Groups
-        <button className="add-button">+ add</button>
+      <h1 className="headers">Groups<button className="add-button">+ add</button>
       </h1>
       {grps.map((g) => (
-        <p key={g.id}>
-          <Link className="eachgroup" to={`/groups/${g.id}`}>
+        <p key={g.id} className="each-group">
+          <Link className="each-element" to={`/groups/${g.id}`}>
             <span className="mx-2">
-              <FontAwesomeIcon icon={faUsers} color="grey"/>
+              <FontAwesomeIcon icon={faUsers} color="grey" />
             </span>
             {g.name}
           </Link>
         </p>
       ))}
-      <h1 className="headers">
-        Friends
-        <button className="add-button">+ add</button>
+      <h1 className="headers">Friends<button className="add-button">+ add</button>
       </h1>
-      {friends}
+      {friends.map((friend) => (
+        <p className="each-element">
+          <span className="mx-2">
+            <FontAwesomeIcon icon={faUsers} color="grey" />
+          </span>
+          {friend}
+        </p>
+      ))}
       <h1 className="headers">Invites Requests</h1>
-      <h1 className="headers">All Users</h1>
-      {usernames}
       <nav className="invitenav">
         <h1 className="invitefriends">Invite Friends to Splicewise</h1>
         <input

@@ -38,12 +38,12 @@ export default function Navbar() {
               </li>
               <li className="nav-item active">
                 <Link className="nav-link" to="/groups/invite">
-                  Create Invite <span className="sr-only"></span>
+                  Add Invite <span className="sr-only"></span>
                 </Link>
               </li>
               <li className="nav-item active">
                 <Link className="nav-link" to="/groups">
-                  My Group <span className="sr-only"></span>
+                  My Groups & Invites <span className="sr-only"></span>
                 </Link>
               </li>
               <li className="nav-item active">
