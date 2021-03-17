@@ -51,7 +51,7 @@ const LeftNav = () => {
       <h1 className="headers">Friends<button className="add-button">+ add</button>
       </h1>
       {friends.map((friend) => (
-        <p className="each-element">
+        <p className="each-friend">
           <span className="mx-2">
             <FontAwesomeIcon icon={faUser} color="grey" />
           </span>

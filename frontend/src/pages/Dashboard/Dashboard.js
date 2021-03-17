@@ -20,7 +20,7 @@ export default function Dashboard() {
     content: {
       top: '40%',
       left: '50%',
-      right: '60%',
+      right: '50%',
       bottom: 'auto',
       marginRight: '-40%',
       transform: 'translate(-40%, -40%)'

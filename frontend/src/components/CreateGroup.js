@@ -2,11 +2,12 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useAlert } from "react-alert";
 import CreateInvite from "./CreateInvite";
+import "./CreateGroup.css";
 
 export default function CreateGroup() {
   const [state, setState] = useState({ name: "", photo: null });
   const alert = useAlert();
-
+  
   const handleCreateGroup = (e) => {
     e.preventDefault();
     let data = new FormData();
@@ -29,53 +30,56 @@ export default function CreateGroup() {
   };
   return (
     <div className="row">
-      <div className="col-md-4">
+      <div className="col-md-3">
         <img
-          style={{ maxWidth: "300px" }}
+          style={{ maxWidth: "270px", height:280 }}
           src={
             state.photo
               ? typeof state.photo === "string"
                 ? `/uploads/${state.photo}`
                 : `https://ui-avatars.com/api/?size=256&name=${state.name
-                    .split(" ")
-                    .join("+")}`
-              : `https://ui-avatars.com/api/?size=256&name=${state.name
                   .split(" ")
                   .join("+")}`
+              : `https://ui-avatars.com/api/?size=256&name=${state.name
+                .split(" ")
+                .join("+")}`
           }
           alt="profile"
         />
       </div>
-      <div className="col-md-8">
-        <form onSubmit={handleCreateGroup}>
-          <h3>Create a new group</h3>
-          <div className="form-group mb-4">
-            <input
-              value={state.name}
-              onChange={(e) => setState({ ...state, name: e.target.value })}
-              className="form-control"
-              type="text"
-              required
-              name="name"
-              placeholder="Group Name"
-            />
-          </div>
-          <div className="form-group">
+      <div className="col-md-7">
+        <div>
+          <form onSubmit={handleCreateGroup}>
+            <h3 className="section-heading">START A NEW GROUP</h3>
+            <h5 >My group shall be called...</h5>
+            <div className="form-group mb-4">
+              <input 
+                value={state.name}
+                onChange={(e) => setState({ ...state, name: e.target.value })}
+                className="form-control"
+                type="text"
+                required
+                name="name"
+                placeholder="Group Name" style={{ fontSize: 22, color: "black" }}
+              />
+            </div>
+
+            <h5 >My group photo shall be...</h5>
             <input
               onChange={(e) => setState({ ...state, photo: e.target.files[0] })}
               className="form-control"
               type="file"
               name="photo"
-              required
-              placeholder="Group Name"
+              required style={{ border: 0, padding:0 }}
             />
-          </div>
-          <button type="submit" className="btn btn-success">
-            Create Group
+            <button type="submit" className="btn btn-success" style={{marginTop:"10px"}}>
+              Create Group
           </button>
-        </form>
+          </form>
+          <hr />
+          <CreateInvite />
+        </div>
       </div>
-      <CreateInvite />
     </div>
   );
 }

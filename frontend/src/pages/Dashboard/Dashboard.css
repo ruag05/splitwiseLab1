@@ -148,7 +148,7 @@
   justify-content: space-between;
   border-radius: 6px 6px 0px 0px;     
 }
-.settle-form-button{
+.add-bill-button{
   font-weight: bold;
   height: 31px;
   border: 1px grey solid;
@@ -164,7 +164,7 @@
   text-shadow: 0 -1px 0 #318970;
   border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
 }
-.settle-form-button:hover {
+.add-bill-button:hover {
   background-color: rgb(184, 183, 183);
   cursor: not-allowed;
 }
@@ -204,9 +204,6 @@
   background-color: #43BA98;
   color: white;
 }
-
-
-
 .invitenav {
  border: 1px lightgrey solid;
  margin-right: 15px;

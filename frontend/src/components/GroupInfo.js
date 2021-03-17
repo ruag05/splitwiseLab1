@@ -15,10 +15,10 @@ export default function GroupInfo() {
   const [back, setBack] = useState(new Map());
 
   const customStyles = {
-    content: {
+    content: {    
       top: '40%',
       left: '50%',
-      right: '70%',
+      right: '60%',
       bottom: 'auto',
       marginRight: '-40%',
       transform: 'translate(-40%, -40%)'
