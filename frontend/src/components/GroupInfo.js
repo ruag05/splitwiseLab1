@@ -2,12 +2,11 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import Modal from "react-modal";
-import './GroupInfo.css';
+import "./GroupInfo.css";
 
 Modal.setAppElement("#root");
 
 export default function GroupInfo() {
-  
   const [modalIsOpen, setIsOpen] = React.useState(false);
   const [data, setData] = useState({ title: "", amount: 0 });
   const [trans, setTrans] = useState([]);
@@ -15,24 +14,21 @@ export default function GroupInfo() {
   const [back, setBack] = useState(new Map());
 
   const customStyles = {
-    content: {    
-      top: '40%',
-      left: '50%',
-      right: '60%',
-      bottom: 'auto',
-      marginRight: '-40%',
-      transform: 'translate(-40%, -40%)'
-    }
+    content: {
+      top: "40%",
+      left: "50%",
+      right: "60%",
+      bottom: "auto",
+      marginRight: "-40%",
+      transform: "translate(-40%, -40%)",
+    },
   };
-
 
   function openModal() {
     setIsOpen(true);
   }
 
-  function afterOpenModal() {
-    
-  }
+  function afterOpenModal() {}
 
   function closeModal() {
     setIsOpen(false);
@@ -103,19 +99,28 @@ export default function GroupInfo() {
 
   return (
     <div>
-      <button onClick={openModal}>Add Expense</button>
+      <div className="row">
+        <button
+          className="ml-auto mr-5 btn btn-success btn-md "
+          onClick={openModal}
+        >
+          Add Expense
+        </button>
+      </div>
       <Modal
         isOpen={modalIsOpen}
         onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
         contentLabel="Add Expense"
-        style={customStyles}>
+        style={customStyles}
+      >
         <h2 className="add-a-bill">Add New Expense</h2>
         <hr />
         <form onSubmit={handleAddExpense}>
           <h2 className="addfriendslabel">With you and Group: {gid}</h2>
           <span className="leftinput">
-            <input className='descrp'
+            <input
+              className="descrp"
               type="text"
               name="title"
               placeholder="Enter a description"
@@ -123,15 +128,26 @@ export default function GroupInfo() {
               value={data.title}
               onChange={handleChange}
             />
-            <div className='amount'>
-              <div className='dollar'>$</div>
-              <input className="amtinput" type="number" min="1" name="amount" required step="0.01"
-                value={data.amount} placeholder="0.00" onChange={handleChange} />
+            <div className="amount">
+              <div className="dollar">$</div>
+              <input
+                className="amtinput"
+                type="number"
+                min="1"
+                name="amount"
+                required
+                step="0.01"
+                value={data.amount}
+                placeholder="0.00"
+                onChange={handleChange}
+              />
             </div>
           </span>
           <br />
-          <div className='buttons'>
-            <button onClick={closeModal} className="cancelbutton">Cancel</button>
+          <div className="buttons">
+            <button onClick={closeModal} className="cancelbutton">
+              Cancel
+            </button>
             <input type="submit" value="Save" className="savebutton" />
           </div>
         </form>
@@ -139,39 +155,46 @@ export default function GroupInfo() {
       <div className="container">
         <div className="row">
           <div className="col-8">
-            <ul>
+            <ul style={{ listStyle: "none" }}>
               {trans.map((t) => {
                 const d = new Date(t.createdAt);
 
                 return (
-                  <li key={t.id}>
+                  <li
+                    key={t.id}
+                    className="bg-danger pl-5 py-2 rounded my-2 text-white"
+                  >
                     <span>{d.toDateString()}</span> <br />
                     <span>{t.title}</span> <br />
                     <span>
                       {/* <strong>Amount </strong> */}
-                      UserId {t.borrowerId} owes {t.amount}
+                      <strong>{t.borrowerName}</strong> owes {t.currency} -{" "}
+                      <strong> {t.amount}</strong>
                     </span>
                   </li>
                 );
               })}
             </ul>
+            {trans.length < 1 ? <h2>No Transactions yet</h2> : null}
           </div>
           <div className="col-4">
             <strong>Group balance</strong>
             <div className="">
               {Array.from(stats).map((st) => {
                 return (
-                  <p>
+                  <p className="bg-danger p-2 text-white rounded">
                     User {st[0]} owes {st[1]}
                   </p>
                 );
               })}
-              {/* {Array.from(stats).length < 1 ? "Nothing to show" : null} */}
+              {Array.from(stats).length < 1 && Array.from(back).length < 1
+                ? "Nothing to show"
+                : null}
             </div>
-            <div className="">
+            <div>
               {Array.from(back).map((st) => {
                 return (
-                  <p>
+                  <p className="bg-info p-2 text-white rounded">
                     User {st[0]} will get back {st[1]}
                   </p>
                 );

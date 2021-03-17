@@ -8,7 +8,7 @@ export default function Groups() {
         <div className="col-md-12">
           <CreateGroup />
         </div>
-      </div>
+      </div>  
     </div>
   );
 }

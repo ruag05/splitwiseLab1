@@ -1,18 +1,12 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useAlert } from "react-alert";
-import ReactDOM from "react-dom";
-import { useHistory } from "react-router-dom";
 
 export default function CreateInvite() {
   const [emails, setEmails] = useState([]);
   const [gName, setGName] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const alert = useAlert();
-
-  let myRef = React.createRef();
-  let history = useHistory();
-
   useEffect(() => {
     axios
       .get("/users/getEmails")
@@ -30,7 +24,8 @@ export default function CreateInvite() {
       return;
     }
     setSuggestions(newSuggstn);
-  };  
+  };
+
   const handleInvite = (email) => {
     if (!gName) {
       alert.info("Please enter Group Name first");
@@ -40,7 +35,7 @@ export default function CreateInvite() {
       .post("/groups/invite", { name: gName, email })
       .then((res) => {
         alert.success(res.data.msg);
-            })
+      })
       .catch((err) => {
         if (err.response?.data.errors) {
           err.response?.data.errors.map((e) => alert.error(e));
@@ -59,13 +54,14 @@ export default function CreateInvite() {
         </div>
         <div className="col-md-5">
           <form>
-            <input 
+            <input
               type="search"
               className="form-control"
               onChange={(e) => setGName(e.target.value)}
             />
           </form>
         </div>
+        <div className="col-md-3"></div>
       </div>
       <div className="row mt-2">
         <div className="col-md-6">
@@ -73,12 +69,13 @@ export default function CreateInvite() {
         </div>
         <div className="col-md-5">
           <form>
-            <input ref={myRef}
+            <input
               type="search"
               className="form-control"
               onChange={handleChange} />
           </form>
         </div>
+
       </div>
       <div className="row mt-4">
         <div className="col-md-6"></div>
@@ -95,6 +92,6 @@ export default function CreateInvite() {
           ))}
         </ul>
       </div>
-    </div >
+    </div>
   );
 }

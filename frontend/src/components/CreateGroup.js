@@ -2,12 +2,11 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useAlert } from "react-alert";
 import CreateInvite from "./CreateInvite";
-import "./CreateGroup.css";
 
 export default function CreateGroup() {
   const [state, setState] = useState({ name: "", photo: null });
   const alert = useAlert();
-  
+
   const handleCreateGroup = (e) => {
     e.preventDefault();
     let data = new FormData();
@@ -32,7 +31,7 @@ export default function CreateGroup() {
     <div className="row">
       <div className="col-md-3">
         <img
-          style={{ maxWidth: "270px", height:280 }}
+          style={{ maxWidth: "270px", height: 280 }}
           src={
             state.photo
               ? typeof state.photo === "string"
@@ -53,7 +52,7 @@ export default function CreateGroup() {
             <h3 className="section-heading">START A NEW GROUP</h3>
             <h5 >My group shall be called...</h5>
             <div className="form-group mb-4">
-              <input 
+              <input
                 value={state.name}
                 onChange={(e) => setState({ ...state, name: e.target.value })}
                 className="form-control"
@@ -70,9 +69,9 @@ export default function CreateGroup() {
               className="form-control"
               type="file"
               name="photo"
-              required style={{ border: 0, padding:0 }}
+              required style={{ border: 0, padding: 0 }}
             />
-            <button type="submit" className="btn btn-success" style={{marginTop:"10px"}}>
+            <button type="submit" className="btn btn-success" style={{ marginTop: "10px" }}>
               Create Group
           </button>
           </form>

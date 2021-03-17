@@ -18,13 +18,13 @@ export default function Dashboard() {
   });
   const customStyles = {
     content: {
-      top: '40%',
-      left: '50%',
-      right: '50%',
-      bottom: 'auto',
-      marginRight: '-40%',
-      transform: 'translate(-40%, -40%)'
-    }
+      top: "40%",
+      left: "50%",
+      right: "50%",
+      bottom: "auto",
+      marginRight: "-40%",
+      transform: "translate(-40%, -40%)",
+    },
   };
   useEffect(() => {
     axios
@@ -47,7 +47,7 @@ export default function Dashboard() {
           }
         });
         setSUsers([...users]);
-        console.log(sUsers);
+        console.log({ sUsers });
       })
       .catch(console.log);
   }, []);
@@ -56,11 +56,10 @@ export default function Dashboard() {
     setIsOpen(true);
   }
 
-  function afterOpenModal() {
-
-  }
+  function afterOpenModal() {}
 
   function closeModal() {
+    console.log(sUsers);
     setIsOpen(false);
   }
 
@@ -79,9 +78,32 @@ export default function Dashboard() {
       .post("/users/settle", { borrowerId })
       .then((res) => {
         alert("Successfully settled all with the user.");
+        axios
+          .get(`/groups/getStats`)
+          .then((res) => {
+            console.log(res.data);
+            setData(res.data);
+          })
+          .catch(console.log);
+        axios
+          .get(`/groups/getTusers`)
+          .then((res) => {
+            let users = [];
+            res.data.users.map((u) => {
+              if (users.includes(u.borrowerId)) {
+                // do nothing
+              } else {
+                // add to array
+                return users.push(u.borrowerId);
+              }
+            });
+            setSUsers([...users]);
+            console.log(sUsers);
+          })
+          .catch(console.log);
         closeModal();
       })
-      .catch((err) => { });
+      .catch((err) => {});
   };
 
   return (
@@ -113,21 +135,26 @@ export default function Dashboard() {
                   onAfterOpen={afterOpenModal}
                   onRequestClose={closeModal}
                   contentLabel="Add Expense"
-                  style={customStyles}>
+                  style={customStyles}
+                >
                   <h2 className="settle-form">Settle Up!</h2>
                   <hr />
                   <form onSubmit={handleSettle}>
                     <section className="container">
-                      <div className="left">Choose friend to settle up with:</div>
-                      <div >
-                        <select className="right"
+                      <div className="left">
+                        Choose friend to settle up with:
+                      </div>
+                      <div>
+                        <select
+                          className="right"
                           name="borrowerId"
                           onChange={(e) => {
                             setBorrowerId(e.target.value);
-                          }}>
+                          }}
+                        >
                           <option value="none" key="none">
                             Select
-                        </option>
+                          </option>
                           {sUsers.map((u) => (
                             <option value={u} key={u}>
                               User-{u}
@@ -136,9 +163,15 @@ export default function Dashboard() {
                         </select>
                       </div>
                     </section>
-                    <div className='buttons'>
-                      <button onClick={closeModal} className="cancelbutton">Cancel</button>
-                      <input type="submit" value="Save" className="savebutton" />
+                    <div className="buttons">
+                      <button onClick={closeModal} className="cancelbutton">
+                        Cancel
+                      </button>
+                      <input
+                        type="submit"
+                        value="Save"
+                        className="savebutton"
+                      />
                     </div>
                   </form>
                 </Modal>
@@ -159,23 +192,24 @@ export default function Dashboard() {
               </div>
             </div>
           </nav>
-          <div className="row mt-5">
-            <div className="col-6">
+          <div className="row mt-2 pl-2">
+            <div className="col-6 border-right">
               <strong>You owe</strong>
               <hr />
               {data.borrowed &&
                 data.borrowed.map((ele, i) => (
                   <p className="text-danger" key={i}>
-                    You owe {ele.amount} to user {ele.author}
+                    You owe {ele.amount} to {ele.authorName}
                   </p>
                 ))}
             </div>
             <div className="col-6">
               <strong>You are owened</strong>
+              <hr />
               {data.authored &&
                 data.authored.map((ele, i) => (
                   <p className="text-success" key={i}>
-                    User {ele.borrowerId} owes you {ele.amount}
+                    {ele.borrowerName} owes you {ele.amount}
                   </p>
                 ))}
             </div>

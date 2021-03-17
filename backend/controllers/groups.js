@@ -168,7 +168,7 @@ exports.leaveGroup = async (req, res) => {
     }
 
     const ts = await db.Transaction.findAll({
-      where: { borrowerId: req.user.userId, groupId: req.body.groupId },
+      where: { borrowerId: req.user.userId, groupId: req.body.groupId, settled: false },
     });
 
     console.log(ts);
@@ -218,7 +218,13 @@ exports.addExpense = async (req, res) => {
         return;
       }
       try {
-        await db.Transaction.create({ ...exp, borrowerId: mem });
+        const u = await db.User.findByPk(mem);
+        await db.Transaction.create({
+          ...exp,
+          borrowerId: mem,
+          authorName: user.name,
+          borrowerName: u.name,
+        });
       } catch (error) {
         console.log(error);
         // return res.status(500).json({ errors: [error.message] });
@@ -226,6 +232,7 @@ exports.addExpense = async (req, res) => {
     });
     await db.History.create({
       author: req.user.userId,
+      authorName: user.name,
       groupId: req.body.gid,
       title: `User-${req.user.userId} added an expense of ${req.body.amount} for ${req.body.title}`,
       amount: req.body.amount,
