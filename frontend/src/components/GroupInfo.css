@@ -21,11 +21,10 @@
      text-shadow: 0 -1px 0 #318a71;
      font-size: 18px;
      font-weight: bold;
-     width: 350px;
+     width: 100%;
      display: flex;
      justify-content: space-between;
-     border-radius: 6px 6px 0px 0px;
-     
+     border-radius: 6px 6px 0px 0px;     
  }
  .buttons {
     display: flex;
@@ -92,8 +91,8 @@
     margin-top: 10px;
     display:flow-root;
  }
- .desc {
-    font-size: 26px;
+ .descrp {
+    font-size: 22px;
     padding: 20px 0px 0px 0px;
     border: dotted;
     border-top: 0;
@@ -103,7 +102,7 @@
     border-bottom-width: 0.15rem;
     margin-left: 85%;
     color: gray;
-    width: 150%;
+    width: 160%;
  }
  .dollar {
     font-size: 20px;
@@ -118,7 +117,7 @@
     border-bottom-color: gray;
     border-bottom-width: 0.15rem;
     margin-left: 85%;
-    width: 150%;
+    width: 160%;
  }
  .amount-focus {
    outline: 0;
@@ -130,7 +129,6 @@
     width: 180px;
     border:0;
     color: gray;
-    
  }
  .innerbillform {
     height: 288px;

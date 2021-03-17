@@ -7,7 +7,6 @@ import Modal from "react-modal";
 Modal.setAppElement("#root");
 
 export default function Dashboard() {
-  var subtitle;
   const [borrowerId, setBorrowerId] = useState(null);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [sUsers, setSUsers] = useState([]);
@@ -17,6 +16,16 @@ export default function Dashboard() {
     authored: [],
     borrowed: [],
   });
+  const customStyles = {
+    content: {
+      top: '40%',
+      left: '50%',
+      right: '60%',
+      bottom: 'auto',
+      marginRight: '-40%',
+      transform: 'translate(-40%, -40%)'
+    }
+  };
   useEffect(() => {
     axios
       .get(`/groups/getStats`)
@@ -48,7 +57,7 @@ export default function Dashboard() {
   }
 
   function afterOpenModal() {
-    subtitle.style.color = "#f00";
+
   }
 
   function closeModal() {
@@ -72,7 +81,7 @@ export default function Dashboard() {
         alert("Successfully settled all with the user.");
         closeModal();
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   return (
@@ -95,7 +104,7 @@ export default function Dashboard() {
             <nav className="dashtop">
               <h1 className="dashboardtitle">Dashboard</h1>
               <div className="dashbuttons">
-                <button className="dash-button">Add A Bill</button>
+                <button className="add-bill-button">Add A Bill</button>
                 <button className="dash-button" onClick={openModal}>
                   Settle Up
                 </button>
@@ -104,32 +113,33 @@ export default function Dashboard() {
                   onAfterOpen={afterOpenModal}
                   onRequestClose={closeModal}
                   contentLabel="Add Expense"
-                >
-                  <h2 ref={(_subtitle) => (subtitle = _subtitle)}>
-                    Add New Expense
-                  </h2>
+                  style={customStyles}>
+                  <h2 className="settle-form">Settle Up!</h2>
                   <hr />
                   <form onSubmit={handleSettle}>
-                    <select
-                      name="borrowerId"
-                      onChange={(e) => {
-                        setBorrowerId(e.target.value);
-                      }}
-                    >
-                      <option value="none" key="none">
-                        Select
-                      </option>
-                      {sUsers.map((u) => (
-                        <option value={u} key={u}>
-                          User-{u}
+                    <section className="container">
+                      <div className="left">Choose friend to settle up with:</div>
+                      <div >
+                        <select className="right"
+                          name="borrowerId"
+                          onChange={(e) => {
+                            setBorrowerId(e.target.value);
+                          }}>
+                          <option value="none" key="none">
+                            Select
                         </option>
-                      ))}
-                    </select>
-                    <br />
-                    <br />
-                    <input type="submit" value="Settle" />
-                    <hr />
-                    <button onClick={closeModal}>close</button>
+                          {sUsers.map((u) => (
+                            <option value={u} key={u}>
+                              User-{u}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </section>
+                    <div className='buttons'>
+                      <button onClick={closeModal} className="cancelbutton">Cancel</button>
+                      <input type="submit" value="Save" className="savebutton" />
+                    </div>
                   </form>
                 </Modal>
               </div>

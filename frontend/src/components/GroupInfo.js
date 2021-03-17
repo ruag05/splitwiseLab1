@@ -7,7 +7,7 @@ import './GroupInfo.css';
 Modal.setAppElement("#root");
 
 export default function GroupInfo() {
-  var subtitle;
+  
   const [modalIsOpen, setIsOpen] = React.useState(false);
   const [data, setData] = useState({ title: "", amount: 0 });
   const [trans, setTrans] = useState([]);
@@ -15,23 +15,23 @@ export default function GroupInfo() {
   const [back, setBack] = useState(new Map());
 
   const customStyles = {
-    content : {
-      top                   : '40%',
-      left                  : '50%',
-      right                 : 'auto',
-      bottom                : 'auto',
-      marginRight           : '-40%',
-      transform             : 'translate(-40%, -40%)'
+    content: {
+      top: '40%',
+      left: '50%',
+      right: '70%',
+      bottom: 'auto',
+      marginRight: '-40%',
+      transform: 'translate(-40%, -40%)'
     }
   };
 
-  
+
   function openModal() {
     setIsOpen(true);
   }
 
   function afterOpenModal() {
-    //subtitle.style.color = "#f00";
+    
   }
 
   function closeModal() {
@@ -109,32 +109,31 @@ export default function GroupInfo() {
         onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
         contentLabel="Add Expense"
-        style={customStyles}
-      >
-        <h2 ref={(_subtitle) => (subtitle = _subtitle)} className="add-a-bill">Add New Expense</h2>
+        style={customStyles}>
+        <h2 className="add-a-bill">Add New Expense</h2>
         <hr />
         <form onSubmit={handleAddExpense}>
-        <h2 className="addfriendslabel">With you and Group: {gid}</h2>
-        <span className="leftinput">  
-          <input className='desc'
-            type="text"
-            name="title"
-            placeholder="Enter a description"
-            required
-            value={data.title}
-            onChange={handleChange}
-          />                                
-          <div className='amount'>
-            <div className='dollar'>$</div>
-          <input className="amtinput" type="number" min="1" name="amount" required step="0.01"
-            value={data.amount} placeholder="0.00" onChange={handleChange}/>
-          </div> 
-        </span>                 
-        <br />
-        <div className='buttons'>
-          <button onClick={closeModal} className="cancelbutton">Cancel</button>
-          <input type="submit" value="Save" className="savebutton" />
-        </div>
+          <h2 className="addfriendslabel">With you and Group: {gid}</h2>
+          <span className="leftinput">
+            <input className='descrp'
+              type="text"
+              name="title"
+              placeholder="Enter a description"
+              required
+              value={data.title}
+              onChange={handleChange}
+            />
+            <div className='amount'>
+              <div className='dollar'>$</div>
+              <input className="amtinput" type="number" min="1" name="amount" required step="0.01"
+                value={data.amount} placeholder="0.00" onChange={handleChange} />
+            </div>
+          </span>
+          <br />
+          <div className='buttons'>
+            <button onClick={closeModal} className="cancelbutton">Cancel</button>
+            <input type="submit" value="Save" className="savebutton" />
+          </div>
         </form>
       </Modal>
       <div className="container">
