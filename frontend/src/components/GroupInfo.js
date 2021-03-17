@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import Modal from "react-modal";
+import './GroupInfo.css';
 
 Modal.setAppElement("#root");
 
@@ -13,12 +14,24 @@ export default function GroupInfo() {
   const [stats, setStats] = useState(new Map());
   const [back, setBack] = useState(new Map());
 
+  const customStyles = {
+    content : {
+      top                   : '40%',
+      left                  : '50%',
+      right                 : 'auto',
+      bottom                : 'auto',
+      marginRight           : '-40%',
+      transform             : 'translate(-40%, -40%)'
+    }
+  };
+
+  
   function openModal() {
     setIsOpen(true);
   }
 
   function afterOpenModal() {
-    subtitle.style.color = "#f00";
+    //subtitle.style.color = "#f00";
   }
 
   function closeModal() {
@@ -33,7 +46,6 @@ export default function GroupInfo() {
 
   const handleAddExpense = (e) => {
     e.preventDefault();
-    // console.log(data, gid);
     axios
       .post("/groups/addExpense", { ...data, gid })
       .then(() => {
@@ -97,34 +109,32 @@ export default function GroupInfo() {
         onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
         contentLabel="Add Expense"
+        style={customStyles}
       >
-        <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Add New Expense</h2>
+        <h2 ref={(_subtitle) => (subtitle = _subtitle)} className="add-a-bill">Add New Expense</h2>
         <hr />
         <form onSubmit={handleAddExpense}>
-          <input
+        <h2 className="addfriendslabel">With you and Group: {gid}</h2>
+        <span className="leftinput">  
+          <input className='desc'
             type="text"
             name="title"
-            placeholder="Enter Expense Title"
+            placeholder="Enter a description"
             required
             value={data.title}
             onChange={handleChange}
-          />
-          <br />
-          <br />
-          <input
-            type="number"
-            min="1"
-            placeholder="Enter Amount"
-            name="amount"
-            required
-            value={data.amount}
-            onChange={handleChange}
-          />
-          <br />
-          <br />
-          <input type="submit" value="Add" />
-          <hr />
-          <button onClick={closeModal}>close</button>
+          />                                
+          <div className='amount'>
+            <div className='dollar'>$</div>
+          <input className="amtinput" type="number" min="1" name="amount" required step="0.01"
+            value={data.amount} placeholder="0.00" onChange={handleChange}/>
+          </div> 
+        </span>                 
+        <br />
+        <div className='buttons'>
+          <button onClick={closeModal} className="cancelbutton">Cancel</button>
+          <input type="submit" value="Save" className="savebutton" />
+        </div>
         </form>
       </Modal>
       <div className="container">
