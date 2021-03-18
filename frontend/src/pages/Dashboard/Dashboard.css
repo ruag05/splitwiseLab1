@@ -1,6 +1,6 @@
 .dashboard-header {
    display: flex; 
-   height: 33px;
+   height: 3px;
    background-color: #5BC5A7;
    color: white;
    width: 100%;
@@ -43,12 +43,12 @@
 .main {
  display: flex;
  justify-content: center;
- align-items: center;
+ align-items: top;
 }
 .main-nav {
-  margin-top: 28px;
+ margin-top: 28px;
  border: .5px lightgrey solid;
- height: 1000px;
+ height: 600px;
  width: 558px;
  box-shadow: inset 0 .3px 0 rgba(255,255,255,.25), 0 8px 8px rgba(124, 124, 124, 0.8);
 }
@@ -348,4 +348,5 @@
   border-right: 0;
   border-bottom-color: gray;
   border-bottom-width: 0.15rem;
+  color: gray;
 }

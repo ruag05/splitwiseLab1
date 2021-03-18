@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useAlert } from "react-alert";
 import CreateInvite from "./CreateInvite";
+import splitwiselogo from "../images/splitwise-logo.png"
 
 export default function CreateGroup() {
   const [state, setState] = useState({ name: "", photo: null });
@@ -39,9 +40,7 @@ export default function CreateGroup() {
                 : `https://ui-avatars.com/api/?size=256&name=${state.name
                   .split(" ")
                   .join("+")}`
-              : `https://ui-avatars.com/api/?size=256&name=${state.name
-                .split(" ")
-                .join("+")}`
+              : splitwiselogo
           }
           alt="profile"
         />
@@ -62,7 +61,6 @@ export default function CreateGroup() {
                 placeholder="Group Name" style={{ fontSize: 22, color: "black" }}
               />
             </div>
-
             <h5 >My group photo shall be...</h5>
             <input
               onChange={(e) => setState({ ...state, photo: e.target.files[0] })}

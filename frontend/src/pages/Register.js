@@ -71,7 +71,7 @@ return (
                       className="form-control"
                       onChange={handleChange}
                       placeholder="Name"
-                      pattern="[a-zA-Z]{4,16}"
+                      pattern="[a-zA-Z0-9 ]{4,16}"
                       title="Must be 4 to 16 characters in length"
                       required
                       autofocus

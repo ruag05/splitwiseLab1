@@ -161,18 +161,7 @@ export default function Dashboard() {
   };
 
   return (
-    <nav>
-      <header className="dashboard-header">
-        <div className="spltwse-icon"></div>
-        <h1 className="dashboard-heading">Splitwise</h1>
-        <h3></h3>
-        <div className="usernameimg">
-          <div className="headimg"></div>
-          <button className="username">
-            Ruchir! <i className="fas fa-caret-down"></i>
-          </button>
-        </div>
-      </header>
+    <nav>   
       <nav className="main">
         <Sidebar />
         <nav className="main-nav">

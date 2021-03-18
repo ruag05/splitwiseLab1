@@ -17,5 +17,15 @@
     border-bottom-color: gray;
     border-bottom-width: 0.15rem;
     margin-left: 30%;
-    width: 8.5%;
+    margin-top: 3px;
+    width: 5.5%;
  } 
+ .t-icon { 
+   background-size: contain;
+   background-repeat: no-repeat;
+   height: 10px;
+   margin-left: 10px;
+   margin-top: 20px;   
+   padding-top: 0.75em;
+   display:flow-root;
+}

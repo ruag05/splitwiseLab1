@@ -12,6 +12,7 @@ export default function GroupInfo() {
   const [trans, setTrans] = useState([]);
   const [history, setHistory] = useState([]);
   const [stats, setStats] = useState([]);
+  const [gName, setGName] = useState(new Map());
 
   const customStyles = {
     content: {
@@ -63,11 +64,23 @@ export default function GroupInfo() {
         setStats(res.data.result);
       })
       .catch(console.log);
+
+      axios
+      .get(`/groups/${gid}`)
+      .then((res)=>{
+        let name = res.data.group.name;
+        setGName(name);
+      })
+      .catch()
   }
+
   useEffect(() => {
     fetchTransactions();
   }, []);
 
+  function formatNumber(int){
+    return int.toFixed(2);
+  }
   return (
     <div>
       <div className="row">
@@ -83,12 +96,17 @@ export default function GroupInfo() {
         onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
         contentLabel="Add Expense"
-        style={customStyles}
-      >
+        style={customStyles}>
         <h2 className="add-a-bill">Add New Expense</h2>
         <hr />
         <form onSubmit={handleAddExpense}>
-          <h2 className="addfriendslabel">With you and Group: {gid}</h2>
+        <span>
+        <h3 className="addfriendslabel">With 
+        "<p style={{fontSize:22, color:"gray"}}>You" </p>
+        and Group "<p style={{fontSize:22, color:"Gray"}}>{gName}"</p></h3>
+        
+        </span>
+         
           <span className="leftinput">
             <input
               className="descrp"
@@ -129,7 +147,6 @@ export default function GroupInfo() {
             <ul style={{ listStyle: "none" }}>
               {history.map((t) => {
                 const d = new Date(t.createdAt);
-
                 return (
                   <li
                     key={t.id}

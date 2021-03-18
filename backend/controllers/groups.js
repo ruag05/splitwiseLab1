@@ -212,7 +212,7 @@ exports.addExpense = async (req, res) => {
     const user = await db.User.findOne({ where: { id: req.user.userId } });
     const g = await db.Group.findByPk(req.body.gid);
     let l = g.members.length < 1 ? 1 : g.members.length;
-    exp.amount = req.body.amount / l;
+    exp.amount = (req.body.amount / l).toFixed(2);
     exp.currency = user.currency;
     g.members.map(async (mem) => {
       // if (mem == req.user.userId) {
@@ -247,9 +247,9 @@ exports.addExpense = async (req, res) => {
       authorName: user.name,
       groupName: g.name,
       groupId: req.body.gid,
-      title: `${user.name} added an expense of ${getCurrencySymbol(user.currency)} ${
+      title: `${user.name} added "${req.body.title}" of ${getCurrencySymbol(user.currency)}${
         req.body.amount
-      } for ${req.body.title}`,
+      }.`,
       amount: req.body.amount,
     });
     res.json({ msg: 'Success' });
@@ -293,33 +293,33 @@ exports.getTransByGId = async (req, res) => {
       if (Array.from(to).length >= Array.from(tb).length) {
         to.forEach((val, key) => {
           if (tb.has(key)) {
-            let sum = +val + +tb.get(key);
+            let sum = (+val + +tb.get(key)).toFixed(2);
             if (sum > 0) {
               result.push(
-                `${users.get(key).name} will get back ${getCurrencySymbol(
+                `${users.get(key).name} gets back ${getCurrencySymbol(
                   users.get(key).crr
                 )} ${sum}`
               );
             }
             if (sum < 0) {
               result.push(
-                `${users.get(key).name} will have to pay ${getCurrencySymbol(
+                `${users.get(key).name} pays ${getCurrencySymbol(
                   users.get(key).crr
                 )} ${Math.abs(sum)}`
               );
             }
           } else {
-            let sum = +val;
+            let sum = (+val).toFixed(2);
             if (sum > 0) {
               result.push(
-                `${users.get(key).name} will get back ${getCurrencySymbol(
+                `${users.get(key).name} gets back ${getCurrencySymbol(
                   users.get(key).crr
                 )} ${sum}`
               );
             }
             if (sum < 0) {
               result.push(
-                `${users.get(key).name} will have to pay ${getCurrencySymbol(
+                `${users.get(key).name} pays ${getCurrencySymbol(
                   users.get(key).crr
                 )} ${Math.abs(sum)}`
               );
@@ -329,31 +329,31 @@ exports.getTransByGId = async (req, res) => {
       } else {
         tb.forEach((val, key) => {
           if (to.has(key)) {
-            let sum = +to.get(key) + +val;
+            let sum = (+to.get(key) + +val).toFixed(2);
             if (sum > 0) {
               result.push(
-                `${users.get(key).name} will get back ${getCurrencySymbol(
+                `${users.get(key).name} gets back ${getCurrencySymbol(
                   users.get(key).crr
                 )} ${sum}`
               );
             }
             if (sum < 0) {
               result.push(
-                `${users.get(key).name} will have to pay ${getCurrencySymbol(
+                `${users.get(key).name} pays ${getCurrencySymbol(
                   users.get(key).crr
                 )} ${Math.abs(sum)}`
               );
             }
           } else {
-            let sum = +val;
+            let sum = (+val).toFixed(2);
             if (sum > 0) {
               result.push(
-                `${users.get(key)} will get back ${getCurrencySymbol(users.get(key).crr)} ${sum}`
+                `${users.get(key)} gets back ${getCurrencySymbol(users.get(key).crr)} ${sum}`
               );
             }
             if (sum < 0) {
               result.push(
-                `${users.get(key).name} will have to pay ${getCurrencySymbol(
+                `${users.get(key).name} pay ${getCurrencySymbol(
                   users.get(key).crr
                 )} ${Math.abs(sum)}`
               );

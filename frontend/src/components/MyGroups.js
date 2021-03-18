@@ -108,7 +108,7 @@ export default function MyGroups() {
   };
 
   return (
-    <div className="container">
+    <div className="container mt-5">
       <div className="row">
         <div className="col-md-6 border-right" >
           <div className="row" >
