@@ -29,7 +29,7 @@ export default function CreateGroup() {
   };
   return (
     <div className="row">
-      <div className="col-md-3" style={{marginRight:20}}>
+      <div className="col-md-3" style={{ marginRight: 20 }}>
         <img
           style={{ maxWidth: "270px", height: 280 }}
           src={
@@ -49,7 +49,7 @@ export default function CreateGroup() {
       <div className="col-md-7">
         <div>
           <form onSubmit={handleCreateGroup}>
-            <h3 className="section-heading" style={{marginTop:2}}>START A NEW GROUP</h3>
+            <h3 className="section-heading" style={{ marginTop: 2 }}>START A NEW GROUP</h3>
             <h5 className="mt-3">My group shall be called...</h5>
             <div className="form-group mb-3">
               <input
@@ -62,6 +62,7 @@ export default function CreateGroup() {
                 placeholder="Group Name" style={{ fontSize: 22, color: "black" }}
               />
             </div>
+
             <h5 >My group photo shall be...</h5>
             <input
               onChange={(e) => setState({ ...state, photo: e.target.files[0] })}
@@ -73,7 +74,7 @@ export default function CreateGroup() {
             <button type="submit" className="btn btn-success" style={{ marginTop: "10px" }}>
               Create Group
           </button>
-          </form>        
+          </form>
           <hr />
           <CreateInvite />
         </div>

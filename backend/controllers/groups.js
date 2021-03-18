@@ -1,4 +1,5 @@
 const db = require('../models');
+const { getCurrencySymbol } = require('../utils/currency');
 
 exports.createGroup = async (req, res) => {
   try {
@@ -214,9 +215,20 @@ exports.addExpense = async (req, res) => {
     exp.amount = req.body.amount / l;
     exp.currency = user.currency;
     g.members.map(async (mem) => {
-      if (mem == req.user.userId) {
-        return;
-      }
+      // if (mem == req.user.userId) {
+      //   try {
+      //     const u = await db.User.findByPk(mem);
+      //     await db.Transaction.create({
+      //       ...exp,
+      //       borrowerId: mem,
+      //       authorName: user.name,
+      //       borrowerName: u.name,
+      //     });
+      //   } catch (error) {
+      //     console.log(error);
+      //     // return res.status(500).json({ errors: [error.message] });
+      //   }
+      // }
       try {
         const u = await db.User.findByPk(mem);
         await db.Transaction.create({
@@ -233,8 +245,11 @@ exports.addExpense = async (req, res) => {
     await db.History.create({
       author: req.user.userId,
       authorName: user.name,
+      groupName: g.name,
       groupId: req.body.gid,
-      title: `${user.name} added an expense of ${req.body.amount} for ${req.body.title}`,
+      title: `${user.name} added an expense of ${getCurrencySymbol(user.currency)} ${
+        req.body.amount
+      } for ${req.body.title}`,
       amount: req.body.amount,
     });
     res.json({ msg: 'Success' });
@@ -256,7 +271,7 @@ exports.getTransByGId = async (req, res) => {
       if (to.has(t.author)) {
         to.set(t.author, +to.get(t.author) + +t.amount);
       } else {
-        users.set(t.author, t.authorName);
+        users.set(t.author, { name: t.authorName, crr: t.currency });
         to.set(t.author, +t.amount);
       }
     });
@@ -266,23 +281,48 @@ exports.getTransByGId = async (req, res) => {
       if (tb.has(t.borrowerId)) {
         tb.set(t.borrowerId, (+tb.get(t.borrowerId) + +t.amount) * -1);
       } else {
-        users.set(t.borrowerId, t.borrowerName);
+        users.set(t.borrowerId, { name: t.borrowerName, crr: t.currency });
         tb.set(t.borrowerId, +t.amount * -1);
       }
     });
 
     let result = [];
 
+    console.log('to: ' + Array.from(to).length, 'tb: ' + Array.from(tb).length);
     try {
       if (Array.from(to).length >= Array.from(tb).length) {
         to.forEach((val, key) => {
           if (tb.has(key)) {
             let sum = +val + +tb.get(key);
             if (sum > 0) {
-              result.push(`${users.get(key)} will get back ${sum}`);
+              result.push(
+                `${users.get(key).name} will get back ${getCurrencySymbol(
+                  users.get(key).crr
+                )} ${sum}`
+              );
             }
             if (sum < 0) {
-              result.push(`${users.get(key)} will have to pay ${Math.abs(sum)}`);
+              result.push(
+                `${users.get(key).name} will have to pay ${getCurrencySymbol(
+                  users.get(key).crr
+                )} ${Math.abs(sum)}`
+              );
+            }
+          } else {
+            let sum = +val;
+            if (sum > 0) {
+              result.push(
+                `${users.get(key).name} will get back ${getCurrencySymbol(
+                  users.get(key).crr
+                )} ${sum}`
+              );
+            }
+            if (sum < 0) {
+              result.push(
+                `${users.get(key).name} will have to pay ${getCurrencySymbol(
+                  users.get(key).crr
+                )} ${Math.abs(sum)}`
+              );
             }
           }
         });
@@ -291,10 +331,32 @@ exports.getTransByGId = async (req, res) => {
           if (to.has(key)) {
             let sum = +to.get(key) + +val;
             if (sum > 0) {
-              result.push(`${users.get(key)} will get back ${sum}`);
+              result.push(
+                `${users.get(key).name} will get back ${getCurrencySymbol(
+                  users.get(key).crr
+                )} ${sum}`
+              );
             }
             if (sum < 0) {
-              result.push(`${users.get(key)} will have to pay ${Math.abs(sum)}`);
+              result.push(
+                `${users.get(key).name} will have to pay ${getCurrencySymbol(
+                  users.get(key).crr
+                )} ${Math.abs(sum)}`
+              );
+            }
+          } else {
+            let sum = +val;
+            if (sum > 0) {
+              result.push(
+                `${users.get(key)} will get back ${getCurrencySymbol(users.get(key).crr)} ${sum}`
+              );
+            }
+            if (sum < 0) {
+              result.push(
+                `${users.get(key).name} will have to pay ${getCurrencySymbol(
+                  users.get(key).crr
+                )} ${Math.abs(sum)}`
+              );
             }
           }
         });
@@ -302,6 +364,11 @@ exports.getTransByGId = async (req, res) => {
     } catch (error) {
       console.log(error);
     }
+
+    console.log(result);
+    // console.log(users);
+    // console.log('to: ', to);
+    // console.log('tb: ', tb);
 
     const h = await db.History.findAll({ where: { groupId: req.params.gid } });
     return res.json({ trans: g, history: h.reverse(), result });
@@ -336,31 +403,40 @@ exports.getStats = async (req, res) => {
 
 exports.getTuser = async (req, res) => {
   try {
+    console.log("Hitting getTuser");
     const us = await db.Transaction.findAll({ where: { author: req.user.userId, settled: false } });
     // const us2 = await db.Transaction.findAll({
     //   where: { borrowerId: req.user.userId, settled: false },
     // });
+
     const authored = await db.Transaction.findAll({
       where: { author: req.user.userId, settled: false },
     });
+    
+    console.log("*********Authored*********");
+    Object.entries(authored).map(author=>{
+      console.log(author);
+    });
+
     const borrowed = await db.Transaction.findAll({
       where: { borrowerId: req.user.userId, settled: false },
     });
-    return res.json({ users: [...us], authored, borrowed });
+    
+    console.log("*********Borrowed*********");   
+    Object.entries(borrowed).map(borrow=>{
+      console.log(borrow);
+    });
+    return res.json({ 
+      users: [...us, ...authored, ...borrowed]
+    });
   } catch (error) {
     return res.json({ errors: [error.message] });
   }
 };
 
-exports.getAllGroups = async (req, res) => {
+exports.getAllGroupsName = async (req, res) => {
   try {
-    const user = await db.User.findByPk(req.user.userId);
-    let groups = [];
-    user.groups.forEach(async (g) => {
-      const grp = await db.Group.findOne({ where: { id: g } });
-      groups = [...groups, grp];
-    });
-    console.log(groups);
+    const groups = await db.Group.findAll();
     res.json({ groups });
   } catch (error) {
     return res.json({ errors: [error.message] });

@@ -1,9 +1,11 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import "./Recent.css"
+
 export default function Recent() {
   const [history, setHistory] = useState([]);
   const [gids, setGids] = useState([]);
+  const [gNames, setGNames] = useState(new Map());
   const [toShow, setToShow] = useState([]);
 
   function sortBydate(a, b) {
@@ -21,8 +23,19 @@ export default function Recent() {
 
   useEffect(() => {
     axios
+      .get("/groups/getAllGroupsName")
+      .then((res) => {
+        let names = new Map();
+        res.data.groups.map((g) => {
+          names.set(g.id, g.name);
+        });
+        setGNames(names);
+      })
+      .catch((err) => { });
+    axios
       .get("/users/getAllHistory")
       .then((res) => {
+        console.log(res.data);
         setHistory(res.data.history.sort(sortBydate));
         setToShow(res.data.history.sort(sortBydate));
         setGids(res.data.gids);
@@ -34,14 +47,14 @@ export default function Recent() {
       <div className="container">
         <span className="outer">
           <h5>
-            Select a group to view specific history
-          </h5>
+            Select a group to view its history
+      </h5>
         </span>
         <div className="inner">
           <select onChange={handleSort} style={{ border: 0, textAlign: "center" }}>
             <option value="all" key="dfds">
               All
-            </option>
+        </option>
             {gids.map((g) => {
               return (
                 <option key={g} value={g}>
@@ -51,6 +64,7 @@ export default function Recent() {
             })}
           </select>
         </div>
+        <hr></hr>
         {toShow.map((h) => {
           return (
             <div className="bg-info p-3 m-1 text-white">{h.title}</div>
@@ -61,6 +75,5 @@ export default function Recent() {
         )}
       </div>
     </div>
-
   );
 }

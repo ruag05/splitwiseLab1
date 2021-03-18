@@ -117,9 +117,9 @@ export default function MyGroups() {
               <ul style={{ marginLeft: "10%", marginTop: "20px" }}>
                 {invGrps.map((g) => {
                   return (
-                    <li style={{fontSize:24}} key={g.id} className="mb-4">
+                    <li style={{ fontSize: 24 }} key={g.id} className="mb-4">
                       {g.name}{" "}
-                      <button  className="btn btn-success ml-2 mt-n2"
+                      <button className="btn btn-success ml-2 mt-n2"
                         className="btn btn-success"
                         onClick={() => handleAccept(g.id)}
                       >
@@ -137,7 +137,7 @@ export default function MyGroups() {
             <div className="col" style={{ marginRight: "auto", marginLeft: 0 }}>
               <h3 style={{ marginLeft: 250 }}>My groups</h3>
               <div className="form-group" style={{ marginLeft: "auto", marginRight: 0 }}>
-                <input style={{width:"50%", marginLeft:"35%", marginTop:"20px"}}
+                <input style={{ width: "50%", marginLeft: "35%", marginTop: "20px" }}
                   onChange={handleSearch}
                   className="form-control"
                   type="text"
@@ -150,7 +150,7 @@ export default function MyGroups() {
                 {grps.map((g) => {
                   return (
                     <li key={g.id} className="mb-4">
-                      <Link style={{fontSize:24}} to={`/groups/${g.id}`}>{g.name}</Link>
+                      <Link style={{ fontSize: 24 }} to={`/groups/${g.id}`}>{g.name}</Link>
                       <button
                         className="btn btn-danger ml-2 mt-n2"
                         onClick={() => handleLeaveGroup(g.id)}

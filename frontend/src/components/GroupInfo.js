@@ -129,6 +129,7 @@ export default function GroupInfo() {
             <ul style={{ listStyle: "none" }}>
               {history.map((t) => {
                 const d = new Date(t.createdAt);
+
                 return (
                   <li
                     key={t.id}
@@ -138,8 +139,8 @@ export default function GroupInfo() {
                     <span>{t.title}</span> <br />
                     <span>
                       {/* <strong>Amount </strong> */}
-                      <strong>{t.borrowerName}</strong> owes {t.currency} -{" "}
-                      <strong> {t.amount}</strong>
+                      {/* <strong>{t.borrowerName}</strong> owes {t.currency} -{" "} */}
+                      {/* <strong> {t.amount}</strong> */}
                     </span>
                   </li>
                 );

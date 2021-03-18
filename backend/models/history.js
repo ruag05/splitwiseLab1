@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      groupName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'Default Group Name',
+      },
       title: {
         type: DataTypes.STRING,
         allowNull: false,

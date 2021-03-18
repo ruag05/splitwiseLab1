@@ -39,11 +39,18 @@ export default function Dashboard() {
         setData(res.data);
       })
       .catch(console.log);
+    console.log("sUsers about to initialize");
     setSUsers(new Map());
     axios
       .get(`/groups/getTusers`)
       .then((res) => {
         let usersId = new Map();
+        console.log("*********res.data.users*********");
+        console.log(typeof (res.data.users));
+        Object.entries(res.data.users).map(([key, u]) => {
+          console.log("User is:");
+          console.log({ key, u });
+        });
         res.data.users.map((u) => {
           // if (Object.entries(u)[1][1] === u.borrowerId) {
           //   // do nothing
@@ -52,12 +59,18 @@ export default function Dashboard() {
           //   return users.push(u);
           // }
           // if (!usersId.includes(u.borrowerId)) usersId.push(u.borrowerId);
+
+          // if current user is not author of any transaction but is borrower of some/few then include authorId in 'select' settle dropdown
+          // LOGIC: check if borrowerId is equal to current user -> if yes then add authorId else add borrowerId, to 'select' settle dropdown
+          // if (u.borrowerId)
+          //   usersId.set(u.authorId, u);
+          // else
           usersId.set(u.borrowerId, u);
           return null;
         });
-        console.log(usersId);
 
         setSUsers(usersId);
+
         // res.data.users.forEach((u) => {
         //   if (usersId.includes(u.borrowerId)) {
         //     setSUsers((ps) => [...ps, u]);
@@ -92,10 +105,11 @@ export default function Dashboard() {
   }, []);
 
   function openModal() {
+
     setIsOpen(true);
   }
 
-  function afterOpenModal() {}
+  function afterOpenModal() { }
 
   function closeModal() {
     console.log(sUsers);
@@ -143,7 +157,7 @@ export default function Dashboard() {
         fetchRes();
         closeModal();
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   return (
@@ -164,7 +178,7 @@ export default function Dashboard() {
         <nav className="main-nav">
           <nav className="dashheader">
             <nav className="dashtop">
-              <h2 className="dashboardtitle" style={{fontWeight:"bold"}}>Dashboard</h2>
+              <h2 className="dashboardtitle" style={{ fontWeight: "bold" }}>Dashboard</h2>
               <div className="dashbuttons">
                 <button className="add-bill-button">Add A Bill</button>
                 <button className="dash-button" onClick={openModal}>
@@ -197,11 +211,13 @@ export default function Dashboard() {
                           </option>
                           {Array.from(sUsers).map(([key, u]) => {
                             console.log({ key, u });
-                            return (
-                              <option value={u.borrowerId} key={u.borrowedId}>
-                                {u.borrowerName} (UserId-{u.borrowerId})
-                              </option>
-                            );
+                            if (u.author != u.borrowerId) {
+                              return (
+                                <option value={u.borrowerId} key={u.borrowedId}>
+                                  {u.borrowerName}
+                                </option>
+                              );
+                            }
                           })}
                         </select>
                       </div>
@@ -223,7 +239,7 @@ export default function Dashboard() {
             <div className="dashbottom">
               <div className="flextotalbalanc">
                 <p className="titleowe">Total balance</p>
-                <p style={{marginLeft:25}}>$ {data.totalOwened - data.totalBorrowed || 0}</p>
+                <p style={{ marginLeft: 25 }}>$ {data.totalOwened - data.totalBorrowed || 0}</p>
               </div>
               <div className="flexowed">
                 <p className="titleowe">You owe</p>
@@ -237,7 +253,7 @@ export default function Dashboard() {
           </nav>
           <div className="row mt-2 pl-2">
             <div className="col-6 border-right">
-              <p style={{fontSize:18, fontWeight:"bold", paddingLeft:80, color:"darkgray"}}>You owe</p>
+            <p style={{fontSize:18, fontWeight:"bold", paddingLeft:80, color:"darkgray"}}>You owe</p>
               <hr />
               {owe &&
                 owe.map((ele, i) => (
@@ -248,7 +264,7 @@ export default function Dashboard() {
                 ))}
             </div>
             <div className="col-6">
-              <p style={{fontSize:18, fontWeight:"bold", paddingLeft:50, color:"darkgray"}}>You are owed</p>
+            <p style={{fontSize:18, fontWeight:"bold", paddingLeft:50, color:"darkgray"}}>You are owed</p>
               <hr />
               {pay &&
                 pay.map((ele, i) => (

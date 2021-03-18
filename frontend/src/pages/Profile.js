@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAlert } from "react-alert";
 import { timezones } from "../utils/timezones";
 import "./Profile.css";
+
 const initState = {
   name: "",
   email: "",
@@ -80,10 +81,10 @@ export default function Profile() {
     <div className="container-sm">
       <br />
       <h2 className="heading">Your Account</h2>
-      <div className="row mt-2" style={{borderTop:'0.2px solid #888'}}>
-        <div className="col-md-4 mr-4 mt-3" style={{paddingLeft:100}}>
+      <div className="row mt-2" style={{ borderTop: '0.2px solid #888' }}>
+        <div className="col-md-4 mr-4 mt-3" style={{ paddingLeft: 100 }}>
           <img
-            style={{ maxWidth: "270px", height: 280, }}
+            s style={{ maxWidth: "270px", height: 280, }}
             src={
               photo
                 ? `/uploads/${photo}`
@@ -95,12 +96,12 @@ export default function Profile() {
           />
           <h5 className="my-2 ml-1">Change your avatar</h5>
           <form onSubmit={handleImageUpload}>
-            <input style={{ marginTop: "5px", marginLeft:"4px" }}
+            <input style={{ marginTop: "5px", marginLeft: "4px" }}
               name="photo"
               type="file"
               onChange={onFileChangeHandler}
             />
-            <button type="submit" className="btn btn-success" style={{ marginTop: "12px", marginLeft:"4px" }}>
+            <button type="submit" className="btn btn-success" style={{ marginTop: "12px", marginLeft: "4px" }}>
               Update Picture
             </button>
           </form>
@@ -108,7 +109,7 @@ export default function Profile() {
         <div className="col-md-7 mt-3" >
           <form onSubmit={handleSubmit}>
             <div className="row mt-3">
-              <div className="col-md-7 px-4" style={{borderLeft:'0.2px solid #888' }}>
+              <div className="col-md-7 px-4" style={{ borderLeft: '0.2px solid #888' }}>
                 <h5 htmlFor="name">Your Name</h5>
                 <input
                   type="text"
@@ -169,7 +170,7 @@ export default function Profile() {
                   ))}
                 </select>
 
-                <h5 htmlFor="curr">Your default language</h5>
+                <label htmlFor="curr">Your default language</label>
                 <select
                   name="language"
                   value={language}
@@ -189,7 +190,8 @@ export default function Profile() {
             <div className="row">
               <button
                 type="submit"
-                className="btn btn-success ml-auto mr-3">
+                className="btn btn-success ml-auto mr-3"
+              >
                 Save
               </button>
             </div>

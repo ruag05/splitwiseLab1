@@ -10,7 +10,7 @@ const {
   getTransByGId,
   getStats,
   getTuser,
-  getAllGroups,
+  getAllGroupsName,
 } = require('../controllers/groups');
 const { checkAuth } = require('../utils/auth');
 const { uploadMiddleware } = require('../utils/upload');
@@ -45,7 +45,7 @@ router.get('/getStats', checkAuth, getStats);
 router.get('/getTransactions/:gid', checkAuth, getTransByGId);
 router.post('/addExpense', checkAuth, addExpense);
 router.get('/getTusers', checkAuth, getTuser);
-router.get('/getAllGroups', checkAuth, getAllGroups);
+router.get('/getAllGroupsName', checkAuth, getAllGroupsName);
 router.get('/:id', checkAuth, getById);
 
 module.exports = router;

@@ -4,6 +4,7 @@ const db = require('../models');
 const jwt = require('jsonwebtoken');
 const { v4: uuid } = require('uuid');
 const { Op } = require('sequelize');
+const { getCurrencySymbol } = require('../utils/currency');
 Op;
 
 const salt = bcrypt.genSaltSync(10);
@@ -202,16 +203,15 @@ exports.settle = async (req, res) => {
 
     const ts = [...ts1, ...ts2];
 
-    console.log('1:', ts1);
-    console.log('2:', ts1);
-    console.log('4:', ts);
     if (ts.length > 0) {
       ts.forEach(async (t) => {
         await db.History.create({
           author: t.author,
           authorName: t.authorName,
           groupId: t.groupId,
-          title: `${t.borrowerName} settled amount of ${t.amount} with ${t.authorName}`,
+          title: `${t.borrowerName} settled amount of ${getCurrencySymbol(t.currency)} ${
+            t.amount
+          } with ${t.authorName}`,
           amount: t.amount,
         });
       });
