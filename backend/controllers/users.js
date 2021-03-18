@@ -193,20 +193,25 @@ exports.settle = async (req, res) => {
       { settled: true },
       { where: { borrowerId: req.user.userId, author: req.body.borrowerId } }
     );
-    const ts = await db.Transaction.findAll({
+    const ts1 = await db.Transaction.findAll({
       where: { author: req.user.userId, borrowerId: req.body.borrowerId },
     });
-    // const ts2 = await db.Transaction.findAll({
-    //   where: { borrowerId: req.user.userId, author: req.body.borrowerId },
-    // });
+    const ts2 = await db.Transaction.findAll({
+      where: { borrowerId: req.user.userId, author: req.body.borrowerId },
+    });
 
-    // const ts = [...ts1, ...ts2];
-    if (ts) {
+    const ts = [...ts1, ...ts2];
+
+    console.log('1:', ts1);
+    console.log('2:', ts1);
+    console.log('4:', ts);
+    if (ts.length > 0) {
       ts.forEach(async (t) => {
         await db.History.create({
           author: t.author,
+          authorName: t.authorName,
           groupId: t.groupId,
-          title: `User-${t.borrowerId} settled amount of ${t.amount} with User-${t.author}`,
+          title: `${t.borrowerName} settled amount of ${t.amount} with ${t.authorName}`,
           amount: t.amount,
         });
       });

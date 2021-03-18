@@ -267,16 +267,17 @@
 }
 
 .titleowe {
- font-size: 13px;
+ font-size: 16px;
+ font-weight: bold;
  color: rgb(105, 104, 104);
- padding-top: 1px;
+ padding-top: 5px;
 }
 .ioweyou {
- color: #ff652f;
+ color:red;
  font-weight: bold;
 }
 .youoweme {
- color: #5bc5a7;
+ color:green;
  font-weight: bold;
 }
 .left-area {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAlert } from "react-alert";
 import { timezones } from "../utils/timezones";
-
+import "./Profile.css";
 const initState = {
   name: "",
   email: "",
@@ -78,38 +78,38 @@ export default function Profile() {
 
   return (
     <div className="container-sm">
-    <br/>
-      <h1 className="ml-2">Your Account</h1>
-      <div className="row">
-        <div className="col-md-4">
+      <br />
+      <h2 className="heading">Your Account</h2>
+      <div className="row mt-2" style={{borderTop:'0.2px solid #888'}}>
+        <div className="col-md-4 mr-4 mt-3" style={{paddingLeft:100}}>
           <img
-            style={{ maxWidth: "300px" }}
+            style={{ maxWidth: "270px", height: 280, }}
             src={
               photo
                 ? `/uploads/${photo}`
                 : `https://ui-avatars.com/api/?size=256&name=${name
-                    .split(" ")
-                    .join("+")}`
+                  .split(" ")
+                  .join("+")}`
             }
             alt="profile"
           />
-          <p className="mt-2 ml-0.75">Choose Your Avatar</p>
+          <h5 className="my-2 ml-1">Change your avatar</h5>
           <form onSubmit={handleImageUpload}>
-            <input            
+            <input style={{ marginTop: "5px", marginLeft:"4px" }}
               name="photo"
               type="file"
-              onChange={onFileChangeHandler}             
+              onChange={onFileChangeHandler}
             />
-            <button type="submit" className="btn btn-success ml-auto mr-3 mt-3">
-              Update
+            <button type="submit" className="btn btn-success" style={{ marginTop: "12px", marginLeft:"4px" }}>
+              Update Picture
             </button>
           </form>
         </div>
-        <div className="col-md-8">
+        <div className="col-md-7 mt-3" >
           <form onSubmit={handleSubmit}>
-            <div className="row">
-              <div className="col-md-8 px-5">
-                <label htmlFor="name">Your Name</label>
+            <div className="row mt-3">
+              <div className="col-md-7 px-4" style={{borderLeft:'0.2px solid #888' }}>
+                <h5 htmlFor="name">Your Name</h5>
                 <input
                   type="text"
                   className="form-control mb-3"
@@ -118,7 +118,7 @@ export default function Profile() {
                   onChange={handleChange}
                   placeholder="Name"
                 />
-                <label htmlFor="email">Your Email</label>
+                <h5 htmlFor="email">Your Email</h5>
                 <input
                   type="email"
                   className="form-control mb-3"
@@ -128,7 +128,7 @@ export default function Profile() {
                   onChange={handleChange}
                   placeholder="Email"
                 />
-                <label htmlFor="phone">Your Phone</label>
+                <h5 htmlFor="phone">Your Phone</h5>
                 <input
                   type="number"
                   className="form-control mb-3"
@@ -138,8 +138,8 @@ export default function Profile() {
                   placeholder="Phone Number"
                 />
               </div>
-              <div className="col-md-4">
-                <label htmlFor="curr">Your default currency</label>
+              <div className="col-md-5">
+                <h5 htmlFor="curr">Your default currency</h5>
                 <select
                   name="currency"
                   onChange={handleChange}
@@ -154,7 +154,7 @@ export default function Profile() {
                   <option value="EUR">EUR</option>
                 </select>
 
-                <label htmlFor="curr">Your default timezone</label>
+                <h5 htmlFor="curr">Your default timezone</h5>
                 <select
                   name="timezone"
                   onChange={handleChange}
@@ -169,7 +169,7 @@ export default function Profile() {
                   ))}
                 </select>
 
-                <label htmlFor="curr">Your default language</label>
+                <h5 htmlFor="curr">Your default language</h5>
                 <select
                   name="language"
                   value={language}
@@ -189,8 +189,7 @@ export default function Profile() {
             <div className="row">
               <button
                 type="submit"
-                className="btn btn-success ml-auto mr-3 mt-4"
-              >
+                className="btn btn-success ml-auto mr-3">
                 Save
               </button>
             </div>

@@ -234,7 +234,7 @@ exports.addExpense = async (req, res) => {
       author: req.user.userId,
       authorName: user.name,
       groupId: req.body.gid,
-      title: `User-${req.user.userId} added an expense of ${req.body.amount} for ${req.body.title}`,
+      title: `${user.name} added an expense of ${req.body.amount} for ${req.body.title}`,
       amount: req.body.amount,
     });
     res.json({ msg: 'Success' });
@@ -248,7 +248,63 @@ exports.getTransByGId = async (req, res) => {
     const g = await db.Transaction.findAll({
       where: { groupId: req.params.gid, settled: false },
     });
-    return res.json({ trans: g });
+
+    let to = new Map();
+    let tb = new Map();
+    let users = new Map();
+    g.map((t) => {
+      if (to.has(t.author)) {
+        to.set(t.author, +to.get(t.author) + +t.amount);
+      } else {
+        users.set(t.author, t.authorName);
+        to.set(t.author, +t.amount);
+      }
+    });
+
+    g.map((t) => {
+      // console.log(t);
+      if (tb.has(t.borrowerId)) {
+        tb.set(t.borrowerId, (+tb.get(t.borrowerId) + +t.amount) * -1);
+      } else {
+        users.set(t.borrowerId, t.borrowerName);
+        tb.set(t.borrowerId, +t.amount * -1);
+      }
+    });
+
+    let result = [];
+
+    try {
+      if (Array.from(to).length >= Array.from(tb).length) {
+        to.forEach((val, key) => {
+          if (tb.has(key)) {
+            let sum = +val + +tb.get(key);
+            if (sum > 0) {
+              result.push(`${users.get(key)} will get back ${sum}`);
+            }
+            if (sum < 0) {
+              result.push(`${users.get(key)} will have to pay ${Math.abs(sum)}`);
+            }
+          }
+        });
+      } else {
+        tb.forEach((val, key) => {
+          if (to.has(key)) {
+            let sum = +to.get(key) + +val;
+            if (sum > 0) {
+              result.push(`${users.get(key)} will get back ${sum}`);
+            }
+            if (sum < 0) {
+              result.push(`${users.get(key)} will have to pay ${Math.abs(sum)}`);
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    const h = await db.History.findAll({ where: { groupId: req.params.gid } });
+    return res.json({ trans: g, history: h.reverse(), result });
   } catch (error) {
     return res.json({ errors: [error.message] });
   }
@@ -270,6 +326,7 @@ exports.getStats = async (req, res) => {
     borrowed.map((a) => {
       totalBorrowed += parseInt(a.amount, 10);
     });
+
     return res.json({ authored, borrowed, totalOwened, totalBorrowed });
   } catch (error) {
     console.log(error);
@@ -280,7 +337,31 @@ exports.getStats = async (req, res) => {
 exports.getTuser = async (req, res) => {
   try {
     const us = await db.Transaction.findAll({ where: { author: req.user.userId, settled: false } });
-    return res.json({ users: us });
+    // const us2 = await db.Transaction.findAll({
+    //   where: { borrowerId: req.user.userId, settled: false },
+    // });
+    const authored = await db.Transaction.findAll({
+      where: { author: req.user.userId, settled: false },
+    });
+    const borrowed = await db.Transaction.findAll({
+      where: { borrowerId: req.user.userId, settled: false },
+    });
+    return res.json({ users: [...us], authored, borrowed });
+  } catch (error) {
+    return res.json({ errors: [error.message] });
+  }
+};
+
+exports.getAllGroups = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.user.userId);
+    let groups = [];
+    user.groups.forEach(async (g) => {
+      const grp = await db.Group.findOne({ where: { id: g } });
+      groups = [...groups, grp];
+    });
+    console.log(groups);
+    res.json({ groups });
   } catch (error) {
     return res.json({ errors: [error.message] });
   }

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-
+import "./Recent.css"
 export default function Recent() {
   const [history, setHistory] = useState([]);
   const [gids, setGids] = useState([]);
@@ -27,39 +27,40 @@ export default function Recent() {
         setToShow(res.data.history.sort(sortBydate));
         setGids(res.data.gids);
       })
-      .catch((err) => {});
+      .catch((err) => { });
   }, []);
   return (
-    <div>
+    <div style={{ marginTop: 20 }}>
       <div className="container">
-        <div className="row">
-          <div className="col">
-            <span className="mr-2">
-              Select a group to view specific history{" "}
-            </span>
-            <select onChange={handleSort}>
-              <option value="all" key="dfds">
-                All
-              </option>
-              {gids.map((g) => {
-                return (
-                  <option key={g} value={g}>
-                    Group - {g}
-                  </option>
-                );
-              })}
-            </select>
-            {toShow.map((h) => {
+        <span className="outer">
+          <h5>
+            Select a group to view specific history
+          </h5>
+        </span>
+        <div className="inner">
+          <select onChange={handleSort} style={{ border: 0, textAlign: "center" }}>
+            <option value="all" key="dfds">
+              All
+            </option>
+            {gids.map((g) => {
               return (
-                <div className="bg-info p-3 m-1 text-white">{h.title}</div>
+                <option key={g} value={g}>
+                  Group: {g}
+                </option>
               );
             })}
-            {!toShow.length && (
-              <div className="bg-warning">Nothing to show</div>
-            )}
-          </div>
+          </select>
         </div>
+        {toShow.map((h) => {
+          return (
+            <div className="bg-info p-3 m-1 text-white">{h.title}</div>
+          );
+        })}
+        {!toShow.length && (
+          <div className="bg-warning">Nothing to show</div>
+        )}
       </div>
     </div>
+
   );
 }

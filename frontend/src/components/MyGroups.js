@@ -22,7 +22,7 @@ export default function MyGroups() {
           });
         });
       })
-      .catch((err) => {});
+      .catch((err) => { });
 
     axios
       .get("/groups/getInvites")
@@ -34,7 +34,7 @@ export default function MyGroups() {
           });
         });
       })
-      .catch((err) => {});
+      .catch((err) => { });
   }, []);
 
   const handleSearch = (e) => {
@@ -61,7 +61,7 @@ export default function MyGroups() {
               });
             });
           })
-          .catch((err) => {});
+          .catch((err) => { });
         alert.success("Group left");
       })
       .catch((err) => {
@@ -88,7 +88,7 @@ export default function MyGroups() {
               });
             });
           })
-          .catch((err) => {});
+          .catch((err) => { });
 
         axios
           .get("/groups/getInvites")
@@ -100,7 +100,7 @@ export default function MyGroups() {
               });
             });
           })
-          .catch((err) => {});
+          .catch((err) => { });
       })
       .catch((err) => {
         alert.error("Somwthing went wrong");
@@ -110,16 +110,16 @@ export default function MyGroups() {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-md-6">
-          <div className="row">
-            <div className="col">
-              <h3>Pending Invites</h3>
-              <ul>
+        <div className="col-md-6 border-right" >
+          <div className="row" >
+            <div className="col" style={{ marginLeft: "auto", marginRight: 0 }}>
+              <h3 style={{ marginLeft: 50 }}>Pending Invites</h3>
+              <ul style={{ marginLeft: "10%", marginTop: "20px" }}>
                 {invGrps.map((g) => {
                   return (
-                    <li key={g.id} className="mb-4">
+                    <li style={{fontSize:24}} key={g.id} className="mb-4">
                       {g.name}{" "}
-                      <button
+                      <button  className="btn btn-success ml-2 mt-n2"
                         className="btn btn-success"
                         onClick={() => handleAccept(g.id)}
                       >
@@ -133,32 +133,36 @@ export default function MyGroups() {
           </div>
         </div>
         <div className="col-md-6">
-          <h3>My groups</h3>
-          <div className="form-group">
-            <input
-              onChange={handleSearch}
-              className="form-control"
-              type="text"
-              name="search"
-              required
-              placeholder="Search By Group Name"
-            />
-          </div>
-          <ul>
-            {grps.map((g) => {
-              return (
-                <li key={g.id} className="mb-4">
-                  <Link to={`/groups/${g.id}`}>{g.name}</Link>
-                  <button
-                    className="btn btn-danger ml-5"
-                    onClick={() => handleLeaveGroup(g.id)}
-                  >
-                    Leave Group
+          <div className="row" >
+            <div className="col" style={{ marginRight: "auto", marginLeft: 0 }}>
+              <h3 style={{ marginLeft: 250 }}>My groups</h3>
+              <div className="form-group" style={{ marginLeft: "auto", marginRight: 0 }}>
+                <input style={{width:"50%", marginLeft:"35%", marginTop:"20px"}}
+                  onChange={handleSearch}
+                  className="form-control"
+                  type="text"
+                  name="search"
+                  required
+                  placeholder="Search By Group Name"
+                />
+              </div>
+              <ul style={{ marginLeft: "35%", marginTop: "20px" }}>
+                {grps.map((g) => {
+                  return (
+                    <li key={g.id} className="mb-4">
+                      <Link style={{fontSize:24}} to={`/groups/${g.id}`}>{g.name}</Link>
+                      <button
+                        className="btn btn-danger ml-2 mt-n2"
+                        onClick={() => handleLeaveGroup(g.id)}
+                      >
+                        Leave Group
                   </button>
-                </li>
-              );
-            })}
-          </ul>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>

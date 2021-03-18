@@ -1,0 +1,21 @@
+
+.outer {   
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 90%;
+    height: 0px;
+    margin-top: 10px;
+    margin-left: 10px;
+    display:flow-root;
+ }
+ .inner {
+    display: flex;
+    border: dotted;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom-color: gray;
+    border-bottom-width: 0.15rem;
+    margin-left: 35%;
+    width: 8.5%;
+ }

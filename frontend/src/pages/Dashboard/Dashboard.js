@@ -9,7 +9,10 @@ Modal.setAppElement("#root");
 export default function Dashboard() {
   const [borrowerId, setBorrowerId] = useState(null);
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [sUsers, setSUsers] = useState([]);
+  // const [grps, setGrps] = useState([]);
+  const [owe, setOwe] = useState([]);
+  const [pay, setPay] = useState([]);
+  const [sUsers, setSUsers] = useState(new Map());
   const [data, setData] = useState({
     totalBorrowed: 0,
     totalOwened: 0,
@@ -26,7 +29,9 @@ export default function Dashboard() {
       transform: "translate(-40%, -40%)",
     },
   };
-  useEffect(() => {
+
+  const fetchRes = () => {
+    setData([]);
     axios
       .get(`/groups/getStats`)
       .then((res) => {
@@ -34,22 +39,56 @@ export default function Dashboard() {
         setData(res.data);
       })
       .catch(console.log);
+    setSUsers(new Map());
     axios
       .get(`/groups/getTusers`)
       .then((res) => {
-        let users = [];
+        let usersId = new Map();
         res.data.users.map((u) => {
-          if (users.includes(u.borrowerId)) {
-            // do nothing
-          } else {
-            // add to array
-            return users.push(u.borrowerId);
-          }
+          // if (Object.entries(u)[1][1] === u.borrowerId) {
+          //   // do nothing
+          // } else {
+          //   // add to array
+          //   return users.push(u);
+          // }
+          // if (!usersId.includes(u.borrowerId)) usersId.push(u.borrowerId);
+          usersId.set(u.borrowerId, u);
+          return null;
         });
-        setSUsers([...users]);
-        console.log({ sUsers });
+        console.log(usersId);
+
+        setSUsers(usersId);
+        // res.data.users.forEach((u) => {
+        //   if (usersId.includes(u.borrowerId)) {
+        //     setSUsers((ps) => [...ps, u]);
+        //     console.log(u);
+        //   }
+        // });
       })
       .catch(console.log);
+
+    axios.get("/users/getGroups").then((res) => {
+      setPay([]);
+      setOwe([]);
+      res.data.groups.map((gid) => {
+        axios.get(`/groups/getTransactions/${gid}`).then((res) => {
+          res.data.result.map((e) => {
+            if (e.includes("pay")) {
+              setPay((ps) => [...ps, e]);
+              console.log("p", e);
+            }
+            if (e.includes("back")) {
+              console.log("o", e);
+              setOwe((ps) => [...ps, e]);
+            }
+            return null;
+          });
+        });
+      });
+    });
+  };
+  useEffect(() => {
+    fetchRes();
   }, []);
 
   function openModal() {
@@ -77,30 +116,31 @@ export default function Dashboard() {
     axios
       .post("/users/settle", { borrowerId })
       .then((res) => {
-        alert("Successfully settled all with the user.");
-        axios
-          .get(`/groups/getStats`)
-          .then((res) => {
-            console.log(res.data);
-            setData(res.data);
-          })
-          .catch(console.log);
-        axios
-          .get(`/groups/getTusers`)
-          .then((res) => {
-            let users = [];
-            res.data.users.map((u) => {
-              if (users.includes(u.borrowerId)) {
-                // do nothing
-              } else {
-                // add to array
-                return users.push(u.borrowerId);
-              }
-            });
-            setSUsers([...users]);
-            console.log(sUsers);
-          })
-          .catch(console.log);
+        // alert("Successfully settled all with the user.");
+        // axios
+        //   .get(`/groups/getStats`)
+        //   .then((res) => {
+        //     console.log(res.data);
+        //     setData(res.data);
+        //   })
+        //   .catch(console.log);
+        // axios
+        //   .get(`/groups/getTusers`)
+        //   .then((res) => {
+        //     let users = [];
+        //     res.data.users.map((u) => {
+        //       if (Object.entries(u)[0][1] === u.borrowerId) {
+        //         // do nothing
+        //       } else {
+        //         // add to array
+        //         return users.push(u);
+        //       }
+        //     });
+        //     setSUsers([...users]);
+        //     console.log(sUsers);
+        //   })
+        //   .catch(console.log);
+        fetchRes();
         closeModal();
       })
       .catch((err) => {});
@@ -124,7 +164,7 @@ export default function Dashboard() {
         <nav className="main-nav">
           <nav className="dashheader">
             <nav className="dashtop">
-              <h1 className="dashboardtitle">Dashboard</h1>
+              <h2 className="dashboardtitle" style={{fontWeight:"bold"}}>Dashboard</h2>
               <div className="dashbuttons">
                 <button className="add-bill-button">Add A Bill</button>
                 <button className="dash-button" onClick={openModal}>
@@ -155,11 +195,14 @@ export default function Dashboard() {
                           <option value="none" key="none">
                             Select
                           </option>
-                          {sUsers.map((u) => (
-                            <option value={u} key={u}>
-                              User-{u}
-                            </option>
-                          ))}
+                          {Array.from(sUsers).map(([key, u]) => {
+                            console.log({ key, u });
+                            return (
+                              <option value={u.borrowerId} key={u.borrowedId}>
+                                {u.borrowerName} (UserId-{u.borrowerId})
+                              </option>
+                            );
+                          })}
                         </select>
                       </div>
                     </section>
@@ -179,37 +222,39 @@ export default function Dashboard() {
             </nav>
             <div className="dashbottom">
               <div className="flextotalbalanc">
-                <p className="titleowe">total balance</p>
-                <p>$ {data.totalOwened - data.totalBorrowed || 0}</p>
+                <p className="titleowe">Total balance</p>
+                <p style={{marginLeft:25}}>$ {data.totalOwened - data.totalBorrowed || 0}</p>
               </div>
               <div className="flexowed">
-                <p className="titleowe">you owe</p>
+                <p className="titleowe">You owe</p>
                 <p className="ioweyou">$ {data.totalBorrowed}</p>
               </div>
               <div className="flexowed">
-                <p className="titleowe">you are owed</p>
+                <p className="titleowe">You are owed</p>
                 <p className="youoweme">${data.totalOwened}</p>
               </div>
             </div>
           </nav>
           <div className="row mt-2 pl-2">
             <div className="col-6 border-right">
-              <strong>You owe</strong>
+              <p style={{fontSize:18, fontWeight:"bold", paddingLeft:80, color:"darkgray"}}>You owe</p>
               <hr />
-              {data.borrowed &&
-                data.borrowed.map((ele, i) => (
+              {owe &&
+                owe.map((ele, i) => (
                   <p className="text-danger" key={i}>
-                    You owe {ele.amount} to {ele.authorName}
+                    {/* You owe {ele.amount} to {ele.authorName} */}
+                    {ele}
                   </p>
                 ))}
             </div>
             <div className="col-6">
-              <strong>You are owened</strong>
+              <p style={{fontSize:18, fontWeight:"bold", paddingLeft:50, color:"darkgray"}}>You are owed</p>
               <hr />
-              {data.authored &&
-                data.authored.map((ele, i) => (
+              {pay &&
+                pay.map((ele, i) => (
                   <p className="text-success" key={i}>
-                    {ele.borrowerName} owes you {ele.amount}
+                    {/* {ele.borrowerName} owes you {ele.amount} */}
+                    {ele}
                   </p>
                 ))}
             </div>
