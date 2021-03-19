@@ -1,5 +1,21 @@
 const db = require('../models');
 const { getCurrencySymbol } = require('../utils/currency');
+const { Op } = require('sequelize');
+const _ = require('lodash');
+
+const userNamesDict = {}
+
+async function getUserNameById(id) {
+  if (id == null) {
+    return "";
+  } else if (userNamesDict[id] != null) {
+    return userNamesDict[id]
+  } else {
+    const tempUser = await db.User.findByPk(id);
+    userNamesDict[id] = tempUser.name;
+    return tempUser.name
+  }
+}
 
 exports.createGroup = async (req, res) => {
   try {
@@ -150,6 +166,7 @@ exports.allUserIvites = async (req, res) => {
 exports.getById = async (req, res) => {
   try {
     const g = await db.Group.findByPk(req.params.id);
+    console.log('---------')
     return res.json({ group: g });
   } catch (error) {
     return res.json({ errors: [error.message] });
@@ -214,6 +231,92 @@ exports.addExpense = async (req, res) => {
     let l = g.members.length < 1 ? 1 : g.members.length;
     exp.amount = (req.body.amount / l).toFixed(2);
     exp.currency = user.currency;
+
+    const membersList = g.members;
+    const totalMembersOfGroup = membersList.length;
+    const partitionedAmount = req.body.amount / totalMembersOfGroup;
+
+    // user who financed the expense
+    const [
+      groupBalance,
+      isCreated,
+    ] = await db.GroupBalance.findOrCreate({
+      where: {
+        userId: req.user.userId,
+        groupId: req.body.gid,
+      },
+      defaults: {
+        userId: req.user.userId,
+        groupId: req.body.gid,
+        balance: partitionedAmount * (totalMembersOfGroup - 1),
+      },
+    });
+
+    if (!isCreated) {
+      groupBalance.balance =
+        groupBalance.balance +
+        partitionedAmount * (totalMembersOfGroup - 1);
+      await groupBalance.save();
+    }
+
+
+    // for all other users
+    // Find or create/update group balancee
+    membersList.forEach(async (userId) => {
+      if (userId != req.user.userId) {
+        console.log(userId);
+        const [
+          groupBalance2,
+          isCreated,
+        ] = await db.GroupBalance.findOrCreate({
+          where: {
+            userId,
+            groupId: req.body.gid,
+          },
+          defaults: {
+
+            userId,
+            groupId: req.body.gid,
+            balance: -1 * partitionedAmount,
+          },
+        });
+        if (!isCreated) {
+          groupBalance2.balance = groupBalance2.balance - partitionedAmount;
+          await groupBalance2.save();
+        }
+      }
+
+    });
+
+    // Debts
+    membersList.forEach(async (userId) => {
+      if (userId != req.user.userId) {
+        const [userId1, userId2, amount] =
+          req.user.userId < userId
+            ? [req.user.userId, userId, partitionedAmount]
+            : [userId, req.user.userId, -1 * partitionedAmount];
+
+        const [debt, isCreated] = await db.Debt.findOrCreate({
+          where: {
+            userId1,
+            userId2,
+            groupId: req.body.gid,
+          },
+          defaults: {
+            userId1,
+            userId2,
+            groupId: req.body.gid,
+            amount,
+          },
+        });
+        if (!isCreated) {
+          debt.amount = debt.amount + amount;
+          await debt.save();
+        }
+      }
+    });
+
+    ////////////////////////////////////////
     g.members.map(async (mem) => {
       // if (mem == req.user.userId) {
       //   try {
@@ -237,6 +340,7 @@ exports.addExpense = async (req, res) => {
           authorName: user.name,
           borrowerName: u.name,
         });
+
       } catch (error) {
         console.log(error);
         // return res.status(500).json({ errors: [error.message] });
@@ -247,9 +351,8 @@ exports.addExpense = async (req, res) => {
       authorName: user.name,
       groupName: g.name,
       groupId: req.body.gid,
-      title: `${user.name} added "${req.body.title}" of ${getCurrencySymbol(user.currency)}${
-        req.body.amount
-      }.`,
+      title: `${user.name} added "${req.body.title}" of ${getCurrencySymbol(user.currency)}${req.body.amount
+        }.`,
       amount: req.body.amount,
     });
     res.json({ msg: 'Success' });
@@ -260,6 +363,116 @@ exports.addExpense = async (req, res) => {
 
 exports.getTransByGId = async (req, res) => {
   try {
+    const group = await db.Group.findByPk(req.params.gid);
+    const membersOfGroup = group.members;
+    const dictionary = {}
+    const groupBalances = []
+    const owesMe = {};
+    const iOwe = {};
+
+    // Saving names
+    for (let index = 0; index < membersOfGroup.length; index++) {
+      let tempUser = await db.User.findByPk(membersOfGroup[index])
+      dictionary[membersOfGroup[index]] = tempUser.name;
+    }
+
+    // Group
+    const newG = await db.GroupBalance.findAll({
+      where: {
+        groupId: req.params.gid,
+        balance: {
+          [Op.ne]: 0
+        }
+      }
+    });
+
+    await newG.forEach((gBalance) => {
+      groupBalances.push(
+        gBalance.balance > 0 ? dictionary[gBalance.userId] + " gets back $" + gBalance.balance : dictionary[gBalance.userId] + " owes $" + (-gBalance.balance)
+      )
+    })
+
+    // dashoboard api
+    // const debts1 = await db.Debt.findAll({
+    //   where: {
+    //     userId1: req.user.userId,
+    //     amount: {
+    //       [Op.ne]: 0
+    //     }
+    //   }
+    // })
+    // const debts1GroupedByUserId = _.chain(debts1).groupBy((debt) => {
+    //   return debt.userId2
+    // }).value()
+
+    // // Computation for debts1
+
+    // for (let userId in debts1GroupedByUserId) {
+    //   if (!owesMe[userId]) {
+    //     owesMe[userId] = {}
+    //     owesMe[userId].name = await getUserNameById(userId)
+    //     owesMe[userId].amount = 0
+    //   }
+    //   for (let index = 0; index < debts1GroupedByUserId[userId].length; index++) {
+    //     owesMe[userId].amount = owesMe[userId].amount + debts1GroupedByUserId[userId][index].amount
+    //   }
+    // }
+
+    // // debts1.forEach((debt) => {
+    // //   debt.amount > 0 ? owesMe.push(getUserNameById(debt.userId2) + " owes $" + ) :
+    // // })
+    // ///
+    // const debts2 = await db.Debt.findAll({
+    //   where: {
+    //     userId2: req.user.userId,
+    //     amount: {
+    //       [Op.ne]: 0
+    //     }
+    //   }
+    // })
+    // const debts2GroupedByUserId = _.chain(debts2).groupBy((debt) => {
+    //   return debt.userId1
+    // }).value()
+
+    // for (let userId in debts2GroupedByUserId) {
+    //   if (!iOwe[userId]) {
+    //     iOwe[userId] = {}
+    //     iOwe[userId].name = await getUserNameById(userId)
+    //     iOwe[userId].amount = 0
+    //   }
+    //   for (let index = 0; index < debts2GroupedByUserId[userId].length; index++) {
+    //     iOwe[userId].amount = iOwe[userId].amount - debts2GroupedByUserId[userId][index].amount
+    //   }
+    // }
+
+    // const finalDict = Object.assign(owesMe);
+
+    // for (const [key, value] of Object.entries(iOwe)) {
+    //   if (!finalDict[key]) {
+    //     finalDict[key] = value
+    //   } else {
+    //     finalDict[key].amount += value.amount
+    //   }
+    // }
+
+    // console.log(finalDict)
+
+    // const finalDashboardData = []
+    // for (const [key, value] of Object.entries(finalDict)) {
+    //   if (value.amount > 0) {
+    //     finalDashboardData.push("You get back $" + value.amount + " from " + value.name)
+    //   } else if (value.amount < 0) {
+    //     finalDashboardData.push("You owe $" + value.amount + "to " + value.name);
+    //   }
+    // }
+
+    // Computation for debts2
+
+
+
+
+    ///////////////////
+
     const g = await db.Transaction.findAll({
       where: { groupId: req.params.gid, settled: false },
     });
@@ -288,8 +501,9 @@ exports.getTransByGId = async (req, res) => {
 
     let result = [];
 
-    console.log('to: ' + Array.from(to).length, 'tb: ' + Array.from(tb).length);
+    // console.log('to: ' + Array.from(to).length, 'tb: ' + Array.from(tb).length);
     try {
+      /////////////////////
       if (Array.from(to).length >= Array.from(tb).length) {
         to.forEach((val, key) => {
           if (tb.has(key)) {
@@ -361,20 +575,101 @@ exports.getTransByGId = async (req, res) => {
           }
         });
       }
+
     } catch (error) {
       console.log(error);
     }
 
-    console.log(result);
+    // console.log(result);
     // console.log(users);
     // console.log('to: ', to);
     // console.log('tb: ', tb);
 
     const h = await db.History.findAll({ where: { groupId: req.params.gid } });
-    return res.json({ trans: g, history: h.reverse(), result });
+    // return res.json({ trans: g, history: h.reverse(), result });
+    return res.json({ trans: g, history: h.reverse(), result, groupBalances });
   } catch (error) {
     return res.json({ errors: [error.message] });
   }
+};
+
+exports.getDashboardData = async (req, res) => {
+  console.log("#####################");
+  console.log("Inside getDashboardData");
+  const owesMe = {};
+  const iOwe = {};
+
+  // dashoboard api
+  const debts1 = await db.Debt.findAll({
+    where: {
+      userId1: req.user.userId,
+      amount: {
+        [Op.ne]: 0
+      }
+    }
+  })
+  const debts1GroupedByUserId = _.chain(debts1).groupBy((debt) => {
+    return debt.userId2
+  }).value()
+
+  // Computation for debts1
+  for (let userId in debts1GroupedByUserId) {
+    if (!owesMe[userId]) {
+      owesMe[userId] = {}
+      owesMe[userId].name = await getUserNameById(userId)
+      owesMe[userId].amount = 0
+    }
+    for (let index = 0; index < debts1GroupedByUserId[userId].length; index++) {
+      owesMe[userId].amount = owesMe[userId].amount + debts1GroupedByUserId[userId][index].amount
+    }
+  }
+
+  const debts2 = await db.Debt.findAll({
+    where: {
+      userId2: req.user.userId,
+      amount: {
+        [Op.ne]: 0
+      }
+    }
+  })
+  const debts2GroupedByUserId = _.chain(debts2).groupBy((debt) => {
+    return debt.userId1
+  }).value()
+
+  for (let userId in debts2GroupedByUserId) {
+    if (!iOwe[userId]) {
+      iOwe[userId] = {}
+      iOwe[userId].name = await getUserNameById(userId)
+      iOwe[userId].amount = 0
+    }
+    for (let index = 0; index < debts2GroupedByUserId[userId].length; index++) {
+      iOwe[userId].amount = iOwe[userId].amount - debts2GroupedByUserId[userId][index].amount
+    }
+  }
+
+  const finalDict = Object.assign(owesMe);
+  for (const [key, value] of Object.entries(iOwe)) {
+    if (!finalDict[key]) {
+      finalDict[key] = value
+    } else {
+      finalDict[key].amount += value.amount
+    }
+  }
+
+  console.log(finalDict)
+
+  const finalDashboardData = []
+
+  for (const [key, value] of Object.entries(finalDict)) {
+    if (value.amount > 0) {
+      finalDashboardData.push("You get back $" + value.amount + " from " + value.name)
+    } else if (value.amount < 0) {
+      finalDashboardData.push("You owe $" + value.amount + " to " + value.name);
+    }
+  }
+  console.log("Finaldata is :" + finalDashboardData)
+
+  return res.json({ finalDashboardData });
 };
 
 exports.getStats = async (req, res) => {
@@ -412,21 +707,19 @@ exports.getTuser = async (req, res) => {
     const authored = await db.Transaction.findAll({
       where: { author: req.user.userId, settled: false },
     });
-    
-    console.log("*********Authored*********");
-    Object.entries(authored).map(author=>{
-      console.log(author);
+
+    Object.entries(authored).map(author => {
+      // console.log(author);
     });
 
     const borrowed = await db.Transaction.findAll({
       where: { borrowerId: req.user.userId, settled: false },
     });
-    
-    console.log("*********Borrowed*********");   
-    Object.entries(borrowed).map(borrow=>{
-      console.log(borrow);
+
+    Object.entries(borrowed).map(borrow => {
+      // console.log(borrow);
     });
-    return res.json({ 
+    return res.json({
       users: [...us, ...authored, ...borrowed]
     });
   } catch (error) {

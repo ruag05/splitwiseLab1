@@ -11,6 +11,7 @@ const {
   getStats,
   getTuser,
   getAllGroupsName,
+  getDashboardData,
 } = require('../controllers/groups');
 const { checkAuth } = require('../utils/auth');
 const { uploadMiddleware } = require('../utils/upload');
@@ -37,6 +38,7 @@ router.post(
   },
   createGroup
 );
+
 router.post('/invite', checkAuth, inviteMember);
 router.post('/leave', checkAuth, leaveGroup);
 router.post('/acceptInvite', checkAuth, acceptInvite);
@@ -46,6 +48,7 @@ router.get('/getTransactions/:gid', checkAuth, getTransByGId);
 router.post('/addExpense', checkAuth, addExpense);
 router.get('/getTusers', checkAuth, getTuser);
 router.get('/getAllGroupsName', checkAuth, getAllGroupsName);
+router.get('/getDashboardData', checkAuth, getDashboardData);
 router.get('/:id', checkAuth, getById);
 
 module.exports = router;

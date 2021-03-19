@@ -61,7 +61,7 @@ export default function GroupInfo() {
         console.log(res.data);
         setTrans(res.data.trans);
         setHistory(res.data.history);
-        setStats(res.data.result);
+        setStats(res.data.groupBalances);
       })
       .catch(console.log);
 

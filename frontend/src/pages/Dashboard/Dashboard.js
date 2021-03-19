@@ -41,6 +41,24 @@ export default function Dashboard() {
       .catch(console.log);
     console.log("sUsers about to initialize");
     setSUsers(new Map());
+
+    axios
+      .get(`/groups/getDashboardData`)
+      .then((res) => {
+        setPay([]);
+        setOwe([]);
+        console.log("Res data is " + res.data.finalDashboardData);
+        res.data.finalDashboardData.map((e) => {
+          if (e.includes("owe")) {
+            setOwe((ps) => [...ps, e]);
+          }
+          else {
+            setPay((ps) => [...ps, e]);
+          }
+        })
+      })
+      .catch(console.log);
+
     axios
       .get(`/groups/getTusers`)
       .then((res) => {
@@ -70,42 +88,41 @@ export default function Dashboard() {
         });
 
         setSUsers(usersId);
-
-        // res.data.users.forEach((u) => {
-        //   if (usersId.includes(u.borrowerId)) {
-        //     setSUsers((ps) => [...ps, u]);
-        //     console.log(u);
-        //   }
-        // });
       })
       .catch(console.log);
 
-    axios.get("/users/getGroups").then((res) => {
-      setPay([]);
-      setOwe([]);
-      res.data.groups.map((gid) => {
-        axios.get(`/groups/getTransactions/${gid}`).then((res) => {
-          res.data.result.map((e) => {
-            if (e.includes("pay")) {
-              setPay((ps) => [...ps, e]);
-              console.log("p", e);
-            }
-            if (e.includes("back")) {
-              console.log("o", e);
-              setOwe((ps) => [...ps, e]);
-            }
-            return null;
-          });
-        });
-      });
-    });
+    // axios.get("/users/getGroups").then((res) => {
+    //   // setPay([]);
+    //   // setOwe([]);
+    //   // res.data.groups.map((gid) => {
+    //   //   axios.get(`/groups/getTransactions/${gid}`).then((res) => {
+    //   //     res.data.finalDashboardData.map((e) => {
+    //   //       if (e.includes("owe")) {
+    //   //         setPay((ps) => [...ps, e]);
+    //   //       }
+    //   //       else {
+    //   //         setOwe((ps) => [...ps, e]);
+    //   //       }
+    //   //     })
+    //   // res.data.result.map((e) => {
+    //   //   if (e.includes("pay")) {
+    //   //     setPay((ps) => [...ps, e]);
+    //   //     console.log("p", e);
+    //   //   }
+    //   //   if (e.includes("back")) {
+    //   //     console.log("o", e);
+    //   //     setOwe((ps) => [...ps, e]);
+    //   //   }
+    //   //   return null;
+    //   // });
+    // });
   };
+
   useEffect(() => {
     fetchRes();
   }, []);
 
   function openModal() {
-
     setIsOpen(true);
   }
 
@@ -161,7 +178,7 @@ export default function Dashboard() {
   };
 
   return (
-    <nav>   
+    <nav>
       <nav className="main">
         <Sidebar />
         <nav className="main-nav">
@@ -242,7 +259,7 @@ export default function Dashboard() {
           </nav>
           <div className="row mt-2 pl-2">
             <div className="col-6 border-right">
-            <p style={{fontSize:18, fontWeight:"bold", paddingLeft:80, color:"darkgray"}}>You owe</p>
+              <p style={{ fontSize: 18, fontWeight: "bold", paddingLeft: 80, color: "darkgray" }}>You owe</p>
               <hr />
               {owe &&
                 owe.map((ele, i) => (
@@ -253,7 +270,7 @@ export default function Dashboard() {
                 ))}
             </div>
             <div className="col-6">
-            <p style={{fontSize:18, fontWeight:"bold", paddingLeft:50, color:"darkgray"}}>You are owed</p>
+              <p style={{ fontSize: 18, fontWeight: "bold", paddingLeft: 50, color: "darkgray" }}>You are owed</p>
               <hr />
               {pay &&
                 pay.map((ele, i) => (
