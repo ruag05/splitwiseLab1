@@ -16,6 +16,7 @@ const { checkAuth } = require('../utils/auth');
 const { uploadMiddleware } = require('../utils/upload');
 const router = express.Router();
 
+router.put('/register', register);
 router.post('/register', register);
 router.post('/login', login);
 router.get('/autoLogin', checkAuth, autoLogin);
