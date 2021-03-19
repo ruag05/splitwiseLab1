@@ -594,8 +594,6 @@ exports.getTransByGId = async (req, res) => {
 };
 
 exports.getDashboardData = async (req, res) => {
-  console.log("#####################");
-  console.log("Inside getDashboardData");
   const owesMe = {};
   const iOwe = {};
 
@@ -664,7 +662,7 @@ exports.getDashboardData = async (req, res) => {
     if (value.amount > 0) {
       finalDashboardData.push("You get back $" + value.amount + " from " + value.name)
     } else if (value.amount < 0) {
-      finalDashboardData.push("You owe $" + value.amount + " to " + value.name);
+      finalDashboardData.push("You owe $" + Math.abs(value.amount) + " to " + value.name);
     }
   }
   console.log("Finaldata is :" + finalDashboardData)
@@ -698,7 +696,6 @@ exports.getStats = async (req, res) => {
 
 exports.getTuser = async (req, res) => {
   try {
-    console.log("Hitting getTuser");
     const us = await db.Transaction.findAll({ where: { author: req.user.userId, settled: false } });
     // const us2 = await db.Transaction.findAll({
     //   where: { borrowerId: req.user.userId, settled: false },

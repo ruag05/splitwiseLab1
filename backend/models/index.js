@@ -46,7 +46,7 @@ db.Sequelize = Sequelize;
 
 //the code will drop the tables and re-create them
 //NOTE: MAKE SURE TO COMMENT IT AFTER FIRST RUN
-// db.sequelize.sync();
+// db.sequelize.sync({force:true});
 
 //check the current state of the table in the db
 //then perform necessary changes in table to make it match the model
