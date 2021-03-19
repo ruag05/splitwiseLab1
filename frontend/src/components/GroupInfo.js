@@ -29,7 +29,7 @@ export default function GroupInfo() {
     setIsOpen(true);
   }
 
-  function afterOpenModal() {}
+  function afterOpenModal() { }
 
   function closeModal() {
     setIsOpen(false);
@@ -65,9 +65,9 @@ export default function GroupInfo() {
       })
       .catch(console.log);
 
-      axios
+    axios
       .get(`/groups/${gid}`)
-      .then((res)=>{
+      .then((res) => {
         let name = res.data.group.name;
         setGName(name);
       })
@@ -78,19 +78,19 @@ export default function GroupInfo() {
     fetchTransactions();
   }, []);
 
-  function formatNumber(int){
+  function formatNumber(int) {
     return int.toFixed(2);
   }
   return (
     <div>
-      <div className="row">
-        <button
-          className="ml-auto mr-5 btn btn-success btn-md "
-          onClick={openModal}
-        >
+      <div className="row" style={{ height: 40 }}>
+        <button style={{ backgroundColor: "gray", color: "white", alignContent: "center", marginTop: 20, marginLeft: "15%", height: 40 }}
+          onClick={openModal}>
           Add Expense
-        </button>
+</button>
       </div>
+      <br></br>
+      <hr></hr>
       <Modal
         isOpen={modalIsOpen}
         onAfterOpen={afterOpenModal}
@@ -100,13 +100,13 @@ export default function GroupInfo() {
         <h2 className="add-a-bill">Add New Expense</h2>
         <hr />
         <form onSubmit={handleAddExpense}>
-        <span>
-        <h3 className="addfriendslabel">With 
-        "<p style={{fontSize:22, color:"gray"}}>You" </p>
-        and Group "<p style={{fontSize:22, color:"Gray"}}>{gName}"</p></h3>
-        
-        </span>
-         
+          <span>
+            <h3 className="addfriendslabel">With
+        "<p style={{ fontSize: 22, color: "gray" }}>You" </p>
+        and Group "<p style={{ fontSize: 22, color: "Gray" }}>{gName}"</p></h3>
+
+          </span>
+
           <span className="leftinput">
             <input
               className="descrp"
@@ -141,16 +141,17 @@ export default function GroupInfo() {
           </div>
         </form>
       </Modal>
-      <div className="container">
-        <div className="row">
+      <div className="container" style={{marginTop: 20,}}>
+        <div className="row">       
           <div className="col-8">
-            <ul style={{ listStyle: "none" }}>
+          <h4 className="ml-5">Group History</h4>
+            <ul style={{ listStyle: "none", marginTop:"20px" }}>
               {history.map((t) => {
                 const d = new Date(t.createdAt);
                 return (
                   <li
-                    key={t.id}
-                    className="bg-danger pl-5 py-2 rounded my-2 text-white"
+                    key={t.id} style={{backgroundColor: "gray", color: "white", marginTop: 20, }}
+                    className="pl-5 py-2 rounded my-2 text-white"
                   >
                     <span>{d.toDateString()}</span> <br />
                     <span>{t.title}</span> <br />
@@ -166,11 +167,11 @@ export default function GroupInfo() {
             {trans.length < 1 ? <h2>No Transactions yet</h2> : null}
           </div>
           <div className="col-4">
-            <strong>Group balance</strong>
+            <h4 className="ml-2">Group balance</h4>
             <div className="">
               {stats.map((st) => {
                 return (
-                  <p className="bg-warning p-2 text-white rounded">{st}</p>
+                  <p style={{backgroundColor: "gray", color: "white", marginTop: 20, }} className="p-2 text-white rounded">{st}</p>
                 );
               })}
               {stats.length < 1 ? "Nothing to show" : null}
