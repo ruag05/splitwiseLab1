@@ -19,7 +19,14 @@ let sequelize;
 //else use alternate settings.
 //use_env_variable: used to identify which db configuration to use
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  sequelize = new Sequelize(process.env[config.use_env_variable], config,{
+    pool: {
+      max: 100,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
+  });
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }

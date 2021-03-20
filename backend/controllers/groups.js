@@ -165,8 +165,10 @@ exports.allUserIvites = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
+    console.log(req.params.id);
     const g = await db.Group.findByPk(req.params.id);
     console.log('---------')
+    console.log(g);
     return res.json({ group: g });
   } catch (error) {
     return res.json({ errors: [error.message] });
@@ -175,6 +177,11 @@ exports.getById = async (req, res) => {
 
 exports.leaveGroup = async (req, res) => {
   try {
+
+
+
+
+
     // TODO:: MAKE SURE TO CHECK FOR ANY DUE BALANCE BEFORE LEAVING THE GROUP
     const user = await db.User.findOne({ where: { id: req.user.userId } });
     if (!user) {
@@ -185,19 +192,43 @@ exports.leaveGroup = async (req, res) => {
       return res.status(400).json({ errors: ['Group not found!'] });
     }
 
-    const ts = await db.Transaction.findAll({
-      where: { borrowerId: req.user.userId, groupId: req.body.groupId, settled: false },
+    console.log("User is: " + req.user.userId);
+    console.log("Group is: " + req.body.groupId);
+
+    const newTs = await db.Debt.findAll({
+      where: { userId1: req.user.userId, groupId: req.body.groupId, amount: 0 },
     });
 
-    console.log(ts);
+    console.log("userId1" + newTs);
 
-    if (ts.length > 0) {
+    const newTs2 = await db.Debt.findAll({
+      where: { userId2: req.user.userId, groupId: req.body.groupId, amount: 0 },
+    });
+
+    console.log("userId2" + newTs2);
+
+    if (!(newTs.length > 0 || newTs2.length > 0)) {
       return res.status(400).json({
         errors: [
           'You have some unsettled transactions to be settle. Please do that before leaving the group',
         ],
       });
     }
+
+
+    // const ts = await db.Transaction.findAll({
+    //   where: { borrowerId: req.user.userId, groupId: req.body.groupId, settled: false },
+    // });
+
+    // console.log(ts);
+
+    // if (ts.length > 0) {
+    //   return res.status(400).json({
+    //     errors: [
+    //       'You have some unsettled transactions to be settle. Please do that before leaving the group',
+    //     ],
+    //   });
+    // }
 
     // console.log(user.groups.filter((g) => g.id == group.id));
     // console.log(group.members.filter((g) => g.id == user.id));
@@ -696,29 +727,67 @@ exports.getStats = async (req, res) => {
 
 exports.getTuser = async (req, res) => {
   try {
-    const us = await db.Transaction.findAll({ where: { author: req.user.userId, settled: false } });
-    // const us2 = await db.Transaction.findAll({
+    // const us = await db.Transaction.findAll({ where: { author: req.user.userId, settled: false } });
+    // // const us2 = await db.Transaction.findAll({
+    // //   where: { borrowerId: req.user.userId, settled: false },
+    // // });
+
+    // const authored = await db.Transaction.findAll({
+    //   where: { author: req.user.userId, settled: false },
+    // });
+
+    // Object.entries(authored).map(author => {
+    //   // console.log(author);
+    // });
+
+    // const borrowed = await db.Transaction.findAll({
     //   where: { borrowerId: req.user.userId, settled: false },
     // });
 
-    const authored = await db.Transaction.findAll({
-      where: { author: req.user.userId, settled: false },
-    });
+    // Object.entries(borrowed).map(borrow => {
+    //   // console.log(borrow);
+    // });
+    // return res.json({
+    //   users: [...us, ...authored, ...borrowed]
+    // });
 
-    Object.entries(authored).map(author => {
-      // console.log(author);
+    const userSet = new Set();
+    const rawUserDebts = await db.Debt.findAll({
+      where: {
+        amount: {
+          [Op.ne]: 0,
+        },
+        [Op.or]: [
+          {
+            userId1: req.user.userId,
+          },
+          {
+            userId2: req.user.userId,
+          },
+        ],
+      },
     });
+    await rawUserDebts.forEach(async (rawDebt, index) => {
+      userSet.add(rawDebt.userId1);
+      userSet.add(rawDebt.userId2);
+    });
+    userSet.delete(req.user.userId);
+    const userList = Array.from(userSet);
+    const users = await db.User.findAll({
+      where: {
+        id: userList,
+      },
+      attributes: ["id", "name", "email"],
+    });
+    const usersList = await users.map((user) => {
+      return {
+        id: user.id,
+        name: user.name
+      }
+    })
+    console.log(usersList)
+    res.status(200).send({ users: usersList });
 
-    const borrowed = await db.Transaction.findAll({
-      where: { borrowerId: req.user.userId, settled: false },
-    });
-
-    Object.entries(borrowed).map(borrow => {
-      // console.log(borrow);
-    });
-    return res.json({
-      users: [...us, ...authored, ...borrowed]
-    });
   } catch (error) {
     return res.json({ errors: [error.message] });
   }

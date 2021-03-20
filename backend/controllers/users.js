@@ -6,7 +6,7 @@ const { v4: uuid } = require('uuid');
 const { Op } = require('sequelize');
 const { getCurrencySymbol } = require('../utils/currency');
 Op;
-
+const utils = require('../utils/helper');
 const salt = bcrypt.genSaltSync(10);
 
 const v = new Validator();
@@ -186,38 +186,63 @@ exports.getAllGroups = async (req, res) => {
 
 exports.settle = async (req, res) => {
   try {
-    await db.Transaction.update(
-      { settled: true },
-      { where: { author: req.user.userId, borrowerId: req.body.borrowerId } }
-    );
-    await db.Transaction.update(
-      { settled: true },
-      { where: { borrowerId: req.user.userId, author: req.body.borrowerId } }
-    );
-    const ts1 = await db.Transaction.findAll({
-      where: { author: req.user.userId, borrowerId: req.body.borrowerId },
-    });
-    const ts2 = await db.Transaction.findAll({
-      where: { borrowerId: req.user.userId, author: req.body.borrowerId },
-    });
+  //   await db.Transaction.update(
+  //     { settled: true },
+  //     { where: { author: req.user.userId, borrowerId: req.body.borrowerId } }
+  //   );
+  //   await db.Transaction.update(
+  //     { settled: true },
+  //     { where: { borrowerId: req.user.userId, author: req.body.borrowerId } }
+  //   );
+  //   // const ts1 = await db.Transaction.findAll({
+  //   //   where: { author: req.user.userId, borrowerId: req.body.borrowerId },
+  //   // });
+  //   const ts2 = await db.Transaction.findAll({
+  //     where: { borrowerId: req.user.userId, author: req.body.borrowerId },
+  //   });
+  //   const ts = [...ts2];
+  //   if (ts.length > 0) {
+  //     ts.forEach(async (t) => {
+  //       await db.History.create({
+  //         author: t.author,
+  //         authorName: t.authorName,
+  //         groupId: t.groupId,
+  //         title: `${t.borrowerName} settled amount of ${getCurrencySymbol(t.currency)} ${
+  //           t.amount
+  //         } with ${t.authorName}`,
+  //         amount: t.amount,
+  //       });
+  //     });
+  //   }
+  //   return res.json({ msg: 'Settled' });
+// userId1 is the smaller userId
+    // userId2 is the larger userId
+    const [userId1, userId2] =
+      req.user.userId <  req.body.borrowerId
+        ? [req.user.userId, req.body.borrowerId]
+        : [req.body.borrowerId,  req.user.userId];
 
-    const ts = [...ts1, ...ts2];
-
-    if (ts.length > 0) {
-      ts.forEach(async (t) => {
-        await db.History.create({
-          author: t.author,
-          authorName: t.authorName,
-          groupId: t.groupId,
-          title: `${t.borrowerName} settled amount of ${getCurrencySymbol(t.currency)} ${
-            t.amount
-          } with ${t.authorName}`,
-          amount: t.amount,
+        const rawUserDebts = await db.Debt.findAll({
+          where: {
+            userId1,
+            userId2,
+            amount: {
+              [Op.ne]: 0,
+            },
+          },
         });
-      });
-    }
 
-    return res.json({ msg: 'Settled' });
+        await rawUserDebts.forEach(async (rawDebt, index) => {
+          await utils.settleUpTheUsers(rawDebt);
+          if (index == rawUserDebts.length - 1) {
+            res.status(200).send({
+              message: "Successfully settled up",
+            });
+            return;
+          }
+        });
+
+
   } catch (error) {
     console.log(error);
     return res.status(500).json({ msg: error.message });

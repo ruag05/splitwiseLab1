@@ -35,11 +35,9 @@ export default function Dashboard() {
     axios
       .get(`/groups/getStats`)
       .then((res) => {
-        console.log(res.data);
         setData(res.data);
       })
       .catch(console.log);
-    console.log("sUsers about to initialize");
     setSUsers(new Map());
 
     axios
@@ -47,7 +45,6 @@ export default function Dashboard() {
       .then((res) => {
         setPay([]);
         setOwe([]);
-        console.log("Res data is " + res.data.finalDashboardData);
         res.data.finalDashboardData.map((e) => {
           if (e.includes("owe")) {
             setOwe((ps) => [...ps, e]);
@@ -63,13 +60,10 @@ export default function Dashboard() {
       .get(`/groups/getTusers`)
       .then((res) => {
         let usersId = new Map();
-        console.log("*********res.data.users*********");
-        console.log(typeof (res.data.users));
-        Object.entries(res.data.users).map(([key, u]) => {
-          console.log("User is:");
-          console.log({ key, u });
-        });
-        res.data.users.map((u) => {
+        // Object.entries(res.data.users).map(([key, u]) => {
+         
+        // });
+        // res.data.users.map((u) => {
           // if (Object.entries(u)[1][1] === u.borrowerId) {
           //   // do nothing
           // } else {
@@ -83,11 +77,11 @@ export default function Dashboard() {
           // if (u.borrowerId)
           //   usersId.set(u.authorId, u);
           // else
-          usersId.set(u.borrowerId, u);
-          return null;
-        });
+        //   usersId.set(u.borrowerId, u);
+        //   return null;
+        // });
 
-        setSUsers(usersId);
+        setSUsers(res.data.users);
       })
       .catch(console.log);
 
@@ -147,6 +141,8 @@ export default function Dashboard() {
     axios
       .post("/users/settle", { borrowerId })
       .then((res) => {
+        console.log("Inside");
+        console.log(res.data);
         // alert("Successfully settled all with the user.");
         // axios
         //   .get(`/groups/getStats`)
@@ -215,15 +211,14 @@ export default function Dashboard() {
                           <option value="none" key="none">
                             Select
                           </option>
-                          {Array.from(sUsers).map(([key, u]) => {
-                            console.log({ key, u });
-                            if (u.author != u.borrowerId) {
+                          {Array.from(sUsers).map((user) => {
+                            
                               return (
-                                <option value={u.borrowerId} key={u.borrowedId}>
-                                  {u.borrowerName}
+                                <option value={user.id} key={user.id}>
+                                  {user.name}
                                 </option>
                               );
-                            }
+                            
                           })}
                         </select>
                       </div>
@@ -242,20 +237,7 @@ export default function Dashboard() {
                 </Modal>
               </div>
             </nav>
-            <div className="dashbottom">
-              <div className="flextotalbalanc">
-                <p className="titleowe">Total balance</p>
-                <p style={{ marginLeft: 25 }}>$ {data.totalOwened - data.totalBorrowed || 0}</p>
-              </div>
-              <div className="flexowed">
-                <p className="titleowe">You owe</p>
-                <p className="ioweyou">$ {data.totalBorrowed}</p>
-              </div>
-              <div className="flexowed">
-                <p className="titleowe">You are owed</p>
-                <p className="youoweme">${data.totalOwened}</p>
-              </div>
-            </div>
+           
           </nav>
           <div className="row mt-2 pl-2">
             <div className="col-6 border-right">
