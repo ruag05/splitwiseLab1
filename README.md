@@ -12,13 +12,13 @@ The clone application is developed as part of Laboratory#1, an academic undertak
 1. Download the repo to your local machine and extract the contents.
 2. Open folder 'splitwise-main' in Visual Studio Code/other editor.
 3. Open terminal and run following commands:
-   A) cd backend
-   B) yarn install (This will install all the needed backend packages for backend)
-   C) yarn dev
+   1. cd backend
+   2. yarn install (This will install all the needed backend packages for backend)
+   3. yarn dev
 4. Open another terminal and run the following commands:
-   A) cd frontend
-   B) yarn install (This will install all the needed backend packages for frontend)
-   C) yarn start
+   1. cd frontend
+   2. yarn install (This will install all the needed backend packages for frontend)
+   3. yarn start
 5. The application should start in a new tab of your default web-browser.
 
 ## Contributing to splitwise
