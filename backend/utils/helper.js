@@ -48,7 +48,7 @@ module.exports = {
         // Add expense
         const expense = await db.History.create(
           {
-            title:otherName + " settled balance with " + authorName, //
+            title:authorName + " settled balance with " + otherName, //
             amount: amountToBePaid,
             groupId: rawDebt.groupId,
             author: toBepaidByUserId,

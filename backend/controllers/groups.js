@@ -394,6 +394,7 @@ exports.addExpense = async (req, res) => {
 
 exports.getTransByGId = async (req, res) => {
   try {
+    console.log(req.params.gid);
     const group = await db.Group.findByPk(req.params.gid);
     const membersOfGroup = group.members;
     const dictionary = {}
@@ -617,6 +618,7 @@ exports.getTransByGId = async (req, res) => {
     // console.log('tb: ', tb);
 
     const h = await db.History.findAll({ where: { groupId: req.params.gid } });
+    console.log("History is:"+h);
     // return res.json({ trans: g, history: h.reverse(), result });
     return res.json({ trans: g, history: h.reverse(), result, groupBalances });
   } catch (error) {

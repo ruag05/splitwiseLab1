@@ -9,7 +9,7 @@ const groupsRouter = require('./routes/groups');
 const app = express();
 
 app.use((req, res, next) => {
-  const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+  const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'database-1.c7md5anch9xu.us-east-2.rds.amazonaws.com'];
   const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
