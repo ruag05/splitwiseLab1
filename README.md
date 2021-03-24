@@ -9,8 +9,17 @@ splitwise is a clone application of Splitwise, a tool that allows friends/roomma
 The clone application is developed as part of Laboratory#1, an academic undertaking at San Jose State University towards Masters in Software Engineering and is intended to boost understanding of web-development technologies/frameworks and is build for academic purposes only.
 
 ## Using splitwise
-
-//Add usage steps, in the end.
+1. Download the repo to your local machine and extract the contents.
+2. Open folder 'splitwise-main' in Visual Studio Code/other editor.
+3. Open terminal and run following commands:
+   1. cd backend
+   2. yarn install (This will install all the needed backend packages for backend)
+   3. yarn dev
+4. Open another terminal and run the following commands:
+   1. cd frontend
+   2. yarn install (This will install all the needed backend packages for frontend)
+   3. yarn start
+5. The application should start in a new tab of your default web-browser.
 
 ## Contributing to splitwise
 To contribute to splitwise, follow these steps:
