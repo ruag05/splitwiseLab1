@@ -16,10 +16,8 @@ const LeftNav = () => {
       .then((res) => {
         // setState(res.data.groups);
         res.data.groups.forEach((i) => {
-          console.log(i);
           axios.get(`/groups/${i}`).then((res) => {
             setGrps((ps) => [...ps, res.data.group]);
-            console.log(res.data.group);
           });
         });
       })

@@ -27,13 +27,6 @@ export default function Login() {
       dispatch({ type: "LOG_IN" });
       alert.success("Log In successful");
       history.push("/dashboard");
-      //history.push("/admin");
-
-      // if (data.role === "user") {
-      //   history.push("/dashboard");
-      // } else if (auth.role === "admin") {
-      //   history.push("/admin");
-      // }
     } catch (error) {
       if (error.response) alert.error(error.response.data.msg);
     }

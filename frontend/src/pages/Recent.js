@@ -34,7 +34,6 @@ export default function Recent() {
         setGNames(names);
         gNames.map(entry=>{
           entry.createdAt=entry.createdAt.getDay()
-          console.log("Date is: "+entry.createdAt.getDay());
         });
 
       })
@@ -42,7 +41,6 @@ export default function Recent() {
     axios
       .get("/users/getAllHistory")
       .then((res) => {
-        console.log(res.data);
         setHistory(res.data.history.sort(sortBydate));
         setToShow(res.data.history.sort(sortBydate));
         setGids(res.data.gids);

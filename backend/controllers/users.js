@@ -60,8 +60,6 @@ exports.register = async (req, res) => {
         where: { email: req.body.email },
       });
 
-      console.log('user exists ', result);
-
       if (result) {
         return res.status(400).json({ msg: 'Email already exists.' });
       }
@@ -86,7 +84,6 @@ exports.register = async (req, res) => {
         userId: checkCreateUser.id,
       });
     } catch (error) {
-      console.log(error);
       res.status(400).json({ msg: error.message });
     }
   }
@@ -107,13 +104,11 @@ exports.updateProfilePic = async (req, res) => {
     await user.update({ photo: req.body.photo });
     return res.json({ msg: 'Updated Profile picture', photo: req.body.photo });
   } catch (error) {
-    console.log(error.message);
     res.status(400).json({ msg: error.message });
   }
 };
 
 exports.updateProfile = async (req, res) => {
-  console.log(req.body);
   try {
     const user = await db.User.findByPk(req.user.userId);
     await user.update(
@@ -129,7 +124,6 @@ exports.updateProfile = async (req, res) => {
 
     res.json({ user: { ...user.dataValues, password: '' } });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: error.message });
   }
 };
@@ -139,7 +133,6 @@ exports.getById = async (req, res) => {
     const user = await db.User.findByPk(req.user.userId);
     return res.json({ ...user, password: '' });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: error.message });
   }
 };
@@ -148,9 +141,7 @@ exports.getPic = async (req, res) => {
   try {
     const user = await db.User.findByPk(req.user.userId);
     return res.json({ photo: user.photo });
-    // return res.sensdFile(process.cwd() + '/uploads' + user.photo);
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: error.message });
   }
 };
@@ -164,58 +155,22 @@ exports.getAllEmails = async (req, res) => {
     });
     return res.json({ emails });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: error.message });
   }
 };
 
 exports.getAllGroups = async (req, res) => {
   try {
-    console.log('__ req.user.userId __ ' + req.user.userId);
     const user = await db.User.findByPk(req.user.userId);
-    // users.forEach((element) => {
-    //   if (element.id != req.user.userId) emails.push(element.email);
-    // });
-
     return res.json({ groups: user.groups });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: error.message });
   }
 };
 
 exports.settle = async (req, res) => {
-  try {
-  //   await db.Transaction.update(
-  //     { settled: true },
-  //     { where: { author: req.user.userId, borrowerId: req.body.borrowerId } }
-  //   );
-  //   await db.Transaction.update(
-  //     { settled: true },
-  //     { where: { borrowerId: req.user.userId, author: req.body.borrowerId } }
-  //   );
-  //   // const ts1 = await db.Transaction.findAll({
-  //   //   where: { author: req.user.userId, borrowerId: req.body.borrowerId },
-  //   // });
-  //   const ts2 = await db.Transaction.findAll({
-  //     where: { borrowerId: req.user.userId, author: req.body.borrowerId },
-  //   });
-  //   const ts = [...ts2];
-  //   if (ts.length > 0) {
-  //     ts.forEach(async (t) => {
-  //       await db.History.create({
-  //         author: t.author,
-  //         authorName: t.authorName,
-  //         groupId: t.groupId,
-  //         title: `${t.borrowerName} settled amount of ${getCurrencySymbol(t.currency)} ${
-  //           t.amount
-  //         } with ${t.authorName}`,
-  //         amount: t.amount,
-  //       });
-  //     });
-  //   }
-  //   return res.json({ msg: 'Settled' });
-// userId1 is the smaller userId
+  try {  
+    // userId1 is the smaller userId
     // userId2 is the larger userId
     const [userId1, userId2] =
       req.user.userId <  req.body.borrowerId
@@ -244,21 +199,13 @@ exports.settle = async (req, res) => {
 
 
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: error.message });
   }
 };
 
 exports.getAllHistory = async (req, res) => {
   try {
-    const user = await db.User.findByPk(req.user.userId);
-    // let byGrps = [];
-    console.log('----------------');
-    // user.groups.forEach(async (g) => {
-    //   db.History.findAll({ where: { groupId: g } }).then((h) => {
-    //     h.map((hh) => byGrps.push(hh));
-    //   });
-    // });
+    const user = await db.User.findByPk(req.user.userId);    
     const byGrps = await db.History.findAll({
       where: {
         [Op.or]: [...user.groups.map((gid) => ({ groupId: gid }))],
@@ -266,7 +213,6 @@ exports.getAllHistory = async (req, res) => {
     });
     res.json({ history: byGrps, gids: user.groups });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: error.message });
   }
 };

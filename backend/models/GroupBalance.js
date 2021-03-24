@@ -2,6 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('./index.js');
 const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
     class GroupBalance extends Model {
         static associate(models) {
@@ -32,11 +33,11 @@ module.exports = (sequelize, DataTypes) => {
             },
             groupId: {
                 type: Sequelize.BIGINT,
-                allowNull:true,
+                allowNull: true,
             },
             userId: {
                 type: Sequelize.BIGINT,
-                allowNull:true,
+                allowNull: true,
             },
         },
         {

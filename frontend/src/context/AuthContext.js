@@ -18,7 +18,6 @@ const AuthProvider = ({ children }) => {
         dispatch({ type: "LOG_OUT" });
       });
     return () => {
-      //
     };
   }, []);
 

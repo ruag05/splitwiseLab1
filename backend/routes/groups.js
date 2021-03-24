@@ -29,7 +29,6 @@ router.post(
         next();
       });
     } catch (error) {
-      console.log(error);
       res.status(500).json({
         msg: 'Server Error',
         errors: ['Something went wrong while uploading documents. Please try again...'],

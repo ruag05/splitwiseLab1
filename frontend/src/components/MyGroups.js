@@ -14,7 +14,6 @@ export default function MyGroups() {
     axios
       .get("/users/getGroups")
       .then((res) => {
-        // setState(res.data.groups);
         res.data.groups.forEach((i) => {
           axios.get(`/groups/${i}`).then((res) => {
             setGlist((ps) => [...ps, res.data.group]);
@@ -44,7 +43,6 @@ export default function MyGroups() {
   };
 
   const handleLeaveGroup = (id) => {
-    // console.log(id);\
     axios
       .post("/groups/leave", { groupId: id })
       .then((res) => {
@@ -53,7 +51,6 @@ export default function MyGroups() {
         axios
           .get("/users/getGroups")
           .then((res) => {
-            // setState(res.data.groups);
             res.data.groups.forEach((i) => {
               axios.get(`/groups/${i}`).then((res) => {
                 setGlist((ps) => [...ps, res.data.group]);
@@ -80,7 +77,6 @@ export default function MyGroups() {
         axios
           .get("/users/getGroups")
           .then((res) => {
-            // setState(res.data.groups);
             res.data.groups.forEach((i) => {
               axios.get(`/groups/${i}`).then((res) => {
                 setGlist((ps) => [...ps, res.data.group]);

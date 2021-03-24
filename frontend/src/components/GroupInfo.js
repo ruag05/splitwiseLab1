@@ -58,7 +58,6 @@ export default function GroupInfo() {
     axios
       .get(`/groups/getTransactions/${gid}`)
       .then((res) => {
-        console.log(res.data);
         setTrans(res.data.trans);
         setHistory(res.data.history);
         setStats(res.data.groupBalances);
@@ -155,10 +154,7 @@ export default function GroupInfo() {
                   >
                     <span>{d.toDateString()}</span> <br />
                     <span>{t.title}</span> <br />
-                    <span>
-                      {/* <strong>Amount </strong> */}
-                      {/* <strong>{t.borrowerName}</strong> owes {t.currency} -{" "} */}
-                      {/* <strong> {t.amount}</strong> */}
+                    <span>                    
                     </span>
                   </li>
                 );

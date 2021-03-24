@@ -8,7 +8,6 @@ exports.checkAuth = (req, res, next) => {
   try {
     let decoded = jwt.verify(authtkn, `${process.env.JWT_SECRET}`);
     req.user = decoded;
-    // console.log("Data: " , decoded);
   } catch (error) {
     return res.status(400).json({ msg: 'Invalid auth token. Please login again.' });
   }

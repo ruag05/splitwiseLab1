@@ -25,7 +25,6 @@ export default function Register() {
     e.preventDefault();
     try {
       if (user.password === user.cpassword) {
-        console.log("Inputs validated successfully");
         const { data } = await axios.post("/users/register", user)
           .then(() => {
             alert.success("Account Created Successfully");
@@ -33,7 +32,6 @@ export default function Register() {
             history.push("/login");
             history.push("/dashboard");
           }, (error) => {
-            console.log("Input validation failed");
             if (error.response.status === 400)
               return alert.error("Email Already In-Use");
             return alert.error(error.response.data.msg);

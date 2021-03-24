@@ -6,7 +6,6 @@ const { v4: uuid } = require('uuid');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const userPath = path.join(process.cwd(), 'uploads');
-    console.log(userPath);
     access(userPath, (err) => {
       if (err) {
         mkdirSync(userPath, { recursive: true });

@@ -19,7 +19,6 @@ async function getUserNameById(id) {
 
 exports.createGroup = async (req, res) => {
   try {
-    console.log(req.user);
     const check = await db.Group.findOne({ where: { name: req.body.name } });
     if (check) {
       return res.status(400).json({ errors: ['Group name already taken'] });
@@ -31,8 +30,6 @@ exports.createGroup = async (req, res) => {
       author: req.user.userId,
     });
 
-    console.log('Testing' + req.user.userId);
-
     //add author to the group created
     const group = await db.Group.findOne({ where: { id: data.id } });
     await group.update({ members: [...group.members, data.author] });
@@ -40,12 +37,6 @@ exports.createGroup = async (req, res) => {
     //add group as one of author's groups
     const user = await db.User.findOne({ where: { id: data.author } });
 
-    console.log('User id is' + user.id);
-    console.log('User groups is' + user.groups.length);
-
-    console.log('req user id ' + req.user.userId);
-    console.log('req group id ' + req.user.groupId);
-    console.log(' group id ' + group.id);
     await user.update({ groups: [...user.groups, group.id] });
 
     return res.json({ msg: 'New group created', group: { id: data.id, photo: data.photo } });
@@ -53,7 +44,6 @@ exports.createGroup = async (req, res) => {
     let errors = [];
     if (error.error) {
       error.errors.map((e) => {
-        console.log(e.message);
         errors.push(e.message);
       });
       return res.status(500).json({ errors });
@@ -100,7 +90,6 @@ exports.inviteMember = async (req, res) => {
     let errors = [];
     if (error.error) {
       error.errors.map((e) => {
-        console.log(e.message);
         errors.push(e.message);
       });
       return res.status(500).json({ errors });
@@ -133,9 +122,6 @@ exports.acceptInvite = async (req, res) => {
       return res.status(400).json({ errors: ['Already accepted the invite!'] });
     }
 
-    console.log(user.groups);
-    console.log(group.members);
-
     await user.update({ groups: [...user.groups, group.id] });
     await group.update({ members: [...group.members, user.id] });
     await invite.destroy();
@@ -144,7 +130,6 @@ exports.acceptInvite = async (req, res) => {
     let errors = [];
     if (error.error) {
       error.errors.map((e) => {
-        console.log(e.message);
         errors.push(e.message);
       });
       return res.status(500).json({ errors });
@@ -165,10 +150,7 @@ exports.allUserIvites = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    console.log(req.params.id);
     const g = await db.Group.findByPk(req.params.id);
-    console.log('---------')
-    console.log(g);
     return res.json({ group: g });
   } catch (error) {
     return res.json({ errors: [error.message] });
@@ -177,11 +159,6 @@ exports.getById = async (req, res) => {
 
 exports.leaveGroup = async (req, res) => {
   try {
-
-
-
-
-
     // TODO:: MAKE SURE TO CHECK FOR ANY DUE BALANCE BEFORE LEAVING THE GROUP
     const user = await db.User.findOne({ where: { id: req.user.userId } });
     if (!user) {
@@ -192,20 +169,13 @@ exports.leaveGroup = async (req, res) => {
       return res.status(400).json({ errors: ['Group not found!'] });
     }
 
-    console.log("User is: " + req.user.userId);
-    console.log("Group is: " + req.body.groupId);
-
     const newTs = await db.Debt.findAll({
       where: { userId1: req.user.userId, groupId: req.body.groupId, amount: 0 },
     });
 
-    console.log("userId1" + newTs);
-
     const newTs2 = await db.Debt.findAll({
       where: { userId2: req.user.userId, groupId: req.body.groupId, amount: 0 },
     });
-
-    console.log("userId2" + newTs2);
 
     if (!(newTs.length > 0 || newTs2.length > 0)) {
       return res.status(400).json({
@@ -215,23 +185,6 @@ exports.leaveGroup = async (req, res) => {
       });
     }
 
-
-    // const ts = await db.Transaction.findAll({
-    //   where: { borrowerId: req.user.userId, groupId: req.body.groupId, settled: false },
-    // });
-
-    // console.log(ts);
-
-    // if (ts.length > 0) {
-    //   return res.status(400).json({
-    //     errors: [
-    //       'You have some unsettled transactions to be settle. Please do that before leaving the group',
-    //     ],
-    //   });
-    // }
-
-    // console.log(user.groups.filter((g) => g.id == group.id));
-    // console.log(group.members.filter((g) => g.id == user.id));
     await group.update({ members: [...group.members.filter((id) => id != user.id)] });
     await user.update({ groups: [...user.groups.filter((id) => id != group.id)] });
     return res.json({ msg: 'Group left' });
@@ -239,7 +192,6 @@ exports.leaveGroup = async (req, res) => {
     let errors = [];
     if (error.error) {
       error.errors.map((e) => {
-        console.log(e.message);
         errors.push(e.message);
       });
       return res.status(500).json({ errors });
@@ -290,12 +242,10 @@ exports.addExpense = async (req, res) => {
       await groupBalance.save();
     }
 
-
     // for all other users
     // Find or create/update group balancee
     membersList.forEach(async (userId) => {
       if (userId != req.user.userId) {
-        console.log(userId);
         const [
           groupBalance2,
           isCreated,
@@ -348,21 +298,7 @@ exports.addExpense = async (req, res) => {
     });
 
     ////////////////////////////////////////
-    g.members.map(async (mem) => {
-      // if (mem == req.user.userId) {
-      //   try {
-      //     const u = await db.User.findByPk(mem);
-      //     await db.Transaction.create({
-      //       ...exp,
-      //       borrowerId: mem,
-      //       authorName: user.name,
-      //       borrowerName: u.name,
-      //     });
-      //   } catch (error) {
-      //     console.log(error);
-      //     // return res.status(500).json({ errors: [error.message] });
-      //   }
-      // }
+    g.members.map(async (mem) => {     
       try {
         const u = await db.User.findByPk(mem);
         await db.Transaction.create({
@@ -373,7 +309,6 @@ exports.addExpense = async (req, res) => {
         });
 
       } catch (error) {
-        console.log(error);
         // return res.status(500).json({ errors: [error.message] });
       }
     });
@@ -394,7 +329,6 @@ exports.addExpense = async (req, res) => {
 
 exports.getTransByGId = async (req, res) => {
   try {
-    console.log(req.params.gid);
     const group = await db.Group.findByPk(req.params.gid);
     const membersOfGroup = group.members;
     const dictionary = {}
@@ -423,88 +357,7 @@ exports.getTransByGId = async (req, res) => {
         gBalance.balance > 0 ? dictionary[gBalance.userId] + " gets back $" + gBalance.balance : dictionary[gBalance.userId] + " owes $" + (-gBalance.balance)
       )
     })
-
-    // dashoboard api
-    // const debts1 = await db.Debt.findAll({
-    //   where: {
-    //     userId1: req.user.userId,
-    //     amount: {
-    //       [Op.ne]: 0
-    //     }
-    //   }
-    // })
-    // const debts1GroupedByUserId = _.chain(debts1).groupBy((debt) => {
-    //   return debt.userId2
-    // }).value()
-
-    // // Computation for debts1
-
-    // for (let userId in debts1GroupedByUserId) {
-    //   if (!owesMe[userId]) {
-    //     owesMe[userId] = {}
-    //     owesMe[userId].name = await getUserNameById(userId)
-    //     owesMe[userId].amount = 0
-    //   }
-    //   for (let index = 0; index < debts1GroupedByUserId[userId].length; index++) {
-    //     owesMe[userId].amount = owesMe[userId].amount + debts1GroupedByUserId[userId][index].amount
-    //   }
-    // }
-
-    // // debts1.forEach((debt) => {
-    // //   debt.amount > 0 ? owesMe.push(getUserNameById(debt.userId2) + " owes $" + ) :
-    // // })
-    // ///
-    // const debts2 = await db.Debt.findAll({
-    //   where: {
-    //     userId2: req.user.userId,
-    //     amount: {
-    //       [Op.ne]: 0
-    //     }
-    //   }
-    // })
-    // const debts2GroupedByUserId = _.chain(debts2).groupBy((debt) => {
-    //   return debt.userId1
-    // }).value()
-
-    // for (let userId in debts2GroupedByUserId) {
-    //   if (!iOwe[userId]) {
-    //     iOwe[userId] = {}
-    //     iOwe[userId].name = await getUserNameById(userId)
-    //     iOwe[userId].amount = 0
-    //   }
-    //   for (let index = 0; index < debts2GroupedByUserId[userId].length; index++) {
-    //     iOwe[userId].amount = iOwe[userId].amount - debts2GroupedByUserId[userId][index].amount
-    //   }
-    // }
-
-    // const finalDict = Object.assign(owesMe);
-
-    // for (const [key, value] of Object.entries(iOwe)) {
-    //   if (!finalDict[key]) {
-    //     finalDict[key] = value
-    //   } else {
-    //     finalDict[key].amount += value.amount
-    //   }
-    // }
-
-    // console.log(finalDict)
-
-    // const finalDashboardData = []
-    // for (const [key, value] of Object.entries(finalDict)) {
-    //   if (value.amount > 0) {
-    //     finalDashboardData.push("You get back $" + value.amount + " from " + value.name)
-    //   } else if (value.amount < 0) {
-    //     finalDashboardData.push("You owe $" + value.amount + "to " + value.name);
-    //   }
-    // }
-
-    // Computation for debts2
-
-
-
-
-    ///////////////////
-
+    
     const g = await db.Transaction.findAll({
       where: { groupId: req.params.gid, settled: false },
     });
@@ -522,7 +375,6 @@ exports.getTransByGId = async (req, res) => {
     });
 
     g.map((t) => {
-      // console.log(t);
       if (tb.has(t.borrowerId)) {
         tb.set(t.borrowerId, (+tb.get(t.borrowerId) + +t.amount) * -1);
       } else {
@@ -532,10 +384,7 @@ exports.getTransByGId = async (req, res) => {
     });
 
     let result = [];
-
-    // console.log('to: ' + Array.from(to).length, 'tb: ' + Array.from(tb).length);
     try {
-      /////////////////////
       if (Array.from(to).length >= Array.from(tb).length) {
         to.forEach((val, key) => {
           if (tb.has(key)) {
@@ -612,13 +461,7 @@ exports.getTransByGId = async (req, res) => {
       console.log(error);
     }
 
-    // console.log(result);
-    // console.log(users);
-    // console.log('to: ', to);
-    // console.log('tb: ', tb);
-
     const h = await db.History.findAll({ where: { groupId: req.params.gid } });
-    console.log("History is:"+h);
     // return res.json({ trans: g, history: h.reverse(), result });
     return res.json({ trans: g, history: h.reverse(), result, groupBalances });
   } catch (error) {
@@ -687,8 +530,6 @@ exports.getDashboardData = async (req, res) => {
     }
   }
 
-  console.log(finalDict)
-
   const finalDashboardData = []
 
   for (const [key, value] of Object.entries(finalDict)) {
@@ -698,7 +539,6 @@ exports.getDashboardData = async (req, res) => {
       finalDashboardData.push("You owe $" + Math.abs(value.amount) + " to " + value.name);
     }
   }
-  console.log("Finaldata is :" + finalDashboardData)
 
   return res.json({ finalDashboardData });
 };
@@ -722,37 +562,12 @@ exports.getStats = async (req, res) => {
 
     return res.json({ authored, borrowed, totalOwened, totalBorrowed });
   } catch (error) {
-    console.log(error);
     return res.json({ errors: [error.message] });
   }
 };
 
 exports.getTuser = async (req, res) => {
-  try {
-    // const us = await db.Transaction.findAll({ where: { author: req.user.userId, settled: false } });
-    // // const us2 = await db.Transaction.findAll({
-    // //   where: { borrowerId: req.user.userId, settled: false },
-    // // });
-
-    // const authored = await db.Transaction.findAll({
-    //   where: { author: req.user.userId, settled: false },
-    // });
-
-    // Object.entries(authored).map(author => {
-    //   // console.log(author);
-    // });
-
-    // const borrowed = await db.Transaction.findAll({
-    //   where: { borrowerId: req.user.userId, settled: false },
-    // });
-
-    // Object.entries(borrowed).map(borrow => {
-    //   // console.log(borrow);
-    // });
-    // return res.json({
-    //   users: [...us, ...authored, ...borrowed]
-    // });
-
+  try {    
     const userSet = new Set();
     const rawUserDebts = await db.Debt.findAll({
       where: {
@@ -787,7 +602,6 @@ exports.getTuser = async (req, res) => {
         name: user.name
       }
     })
-    console.log(usersList)
     res.status(200).send({ users: usersList });
 
   } catch (error) {

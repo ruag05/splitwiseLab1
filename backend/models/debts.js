@@ -3,8 +3,6 @@ const Sequelize = require('sequelize');
 const db = require('./index.js');
 const { Model } = require('sequelize');
 
-// const User = require('./users')(sequelize, Sequelize.DataTypes);
-// const Group = require('./groups')(sequelize, Sequelize.DataTypes);
 module.exports = (sequelize, DataTypes) => {
     class Debt extends Model {
         static associate(models) {

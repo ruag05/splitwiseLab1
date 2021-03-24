@@ -9,7 +9,6 @@ Modal.setAppElement("#root");
 export default function Dashboard() {
   const [borrowerId, setBorrowerId] = useState(null);
   const [modalIsOpen, setIsOpen] = useState(false);
-  // const [grps, setGrps] = useState([]);
   const [owe, setOwe] = useState([]);
   const [pay, setPay] = useState([]);
   const [sUsers, setSUsers] = useState(new Map());
@@ -59,57 +58,10 @@ export default function Dashboard() {
     axios
       .get(`/groups/getTusers`)
       .then((res) => {
-        let usersId = new Map();
-        // Object.entries(res.data.users).map(([key, u]) => {
-         
-        // });
-        // res.data.users.map((u) => {
-          // if (Object.entries(u)[1][1] === u.borrowerId) {
-          //   // do nothing
-          // } else {
-          //   // add to array
-          //   return users.push(u);
-          // }
-          // if (!usersId.includes(u.borrowerId)) usersId.push(u.borrowerId);
-
-          // if current user is not author of any transaction but is borrower of some/few then include authorId in 'select' settle dropdown
-          // LOGIC: check if borrowerId is equal to current user -> if yes then add authorId else add borrowerId, to 'select' settle dropdown
-          // if (u.borrowerId)
-          //   usersId.set(u.authorId, u);
-          // else
-        //   usersId.set(u.borrowerId, u);
-        //   return null;
-        // });
-
+        let usersId = new Map();       
         setSUsers(res.data.users);
       })
-      .catch(console.log);
-
-    // axios.get("/users/getGroups").then((res) => {
-    //   // setPay([]);
-    //   // setOwe([]);
-    //   // res.data.groups.map((gid) => {
-    //   //   axios.get(`/groups/getTransactions/${gid}`).then((res) => {
-    //   //     res.data.finalDashboardData.map((e) => {
-    //   //       if (e.includes("owe")) {
-    //   //         setPay((ps) => [...ps, e]);
-    //   //       }
-    //   //       else {
-    //   //         setOwe((ps) => [...ps, e]);
-    //   //       }
-    //   //     })
-    //   // res.data.result.map((e) => {
-    //   //   if (e.includes("pay")) {
-    //   //     setPay((ps) => [...ps, e]);
-    //   //     console.log("p", e);
-    //   //   }
-    //   //   if (e.includes("back")) {
-    //   //     console.log("o", e);
-    //   //     setOwe((ps) => [...ps, e]);
-    //   //   }
-    //   //   return null;
-    //   // });
-    // });
+      .catch(console.log);    
   };
 
   useEffect(() => {
@@ -129,7 +81,6 @@ export default function Dashboard() {
 
   const handleSettle = (e) => {
     e.preventDefault();
-    console.log(borrowerId);
     if (borrowerId === "none") {
       alert("Please select a user first");
       return;
@@ -140,33 +91,7 @@ export default function Dashboard() {
     }
     axios
       .post("/users/settle", { borrowerId })
-      .then((res) => {
-        console.log("Inside");
-        console.log(res.data);
-        // alert("Successfully settled all with the user.");
-        // axios
-        //   .get(`/groups/getStats`)
-        //   .then((res) => {
-        //     console.log(res.data);
-        //     setData(res.data);
-        //   })
-        //   .catch(console.log);
-        // axios
-        //   .get(`/groups/getTusers`)
-        //   .then((res) => {
-        //     let users = [];
-        //     res.data.users.map((u) => {
-        //       if (Object.entries(u)[0][1] === u.borrowerId) {
-        //         // do nothing
-        //       } else {
-        //         // add to array
-        //         return users.push(u);
-        //       }
-        //     });
-        //     setSUsers([...users]);
-        //     console.log(sUsers);
-        //   })
-        //   .catch(console.log);
+      .then((res) => {       
         fetchRes();
         closeModal();
       })
